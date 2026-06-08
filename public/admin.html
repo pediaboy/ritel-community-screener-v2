@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Panel — RITELCOMMUNITY.ID</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;800&display=swap');
+  :root{--c-bg:#060612;--c-card:#0c0c1e;--c-border:#1a1a3e;--c-neon:#00d4ff;--c-green:#00ff88;--c-red:#ff4466;--c-gold:#ffd700;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--c-bg);color:#e0e0ff;font-family:'Inter',sans-serif;min-height:100vh;}
+  .brand{font-family:'Orbitron',monospace;}
+  .neon-text{color:var(--c-neon);text-shadow:0 0 10px rgba(0,212,255,0.5);}
+  .glass{background:rgba(12,12,30,0.9);backdrop-filter:blur(20px);}
+  .neon-border{border:1px solid rgba(0,212,255,0.2);}
+  .input-field{width:100%;background:rgba(6,6,18,0.8);border:1px solid rgba(0,212,255,0.2);border-radius:10px;padding:10px 14px;color:#e0e0ff;font-family:'Inter',sans-serif;font-size:0.85rem;outline:none;transition:border 0.2s;}
+  .input-field:focus{border-color:rgba(0,212,255,0.6);box-shadow:0 0 12px rgba(0,212,255,0.1);}
+  .btn-neon{background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(0,100,255,0.15));border:1px solid rgba(0,212,255,0.5);color:var(--c-neon);font-weight:600;padding:10px 20px;border-radius:10px;cursor:pointer;width:100%;font-family:'Inter',sans-serif;transition:all 0.3s;font-size:0.85rem;}
+  .btn-neon:hover{box-shadow:0 0 20px rgba(0,212,255,0.3);}
+  .btn-green{background:rgba(0,255,136,0.12);border:1px solid rgba(0,255,136,0.4);color:var(--c-green);font-weight:600;padding:10px 20px;border-radius:10px;cursor:pointer;width:100%;font-family:'Inter',sans-serif;font-size:0.85rem;transition:all 0.3s;}
+  .btn-green:hover{box-shadow:0 0 20px rgba(0,255,136,0.25);}
+  .btn-red{background:rgba(255,68,102,0.12);border:1px solid rgba(255,68,102,0.4);color:var(--c-red);font-weight:600;padding:10px 20px;border-radius:10px;cursor:pointer;width:100%;font-family:'Inter',sans-serif;font-size:0.85rem;transition:all 0.3s;}
+  .btn-danger{background:linear-gradient(135deg,rgba(255,68,102,0.2),rgba(200,0,50,0.2));border:1px solid rgba(255,68,102,0.6);color:#ff6680;font-weight:700;padding:14px 20px;border-radius:12px;cursor:pointer;width:100%;font-family:'Inter',sans-serif;font-size:0.9rem;transition:all 0.3s;}
+  .btn-danger:hover{box-shadow:0 0 25px rgba(255,68,102,0.4);transform:translateY(-1px);}
+  .card{background:rgba(12,12,30,0.85);border:1px solid rgba(26,26,62,0.8);border-radius:16px;padding:24px;}
+  .section-label{font-size:0.62rem;letter-spacing:0.2em;color:rgba(255,255,255,0.3);margin-bottom:12px;text-transform:uppercase;}
+  .notif{display:none;padding:10px 16px;border-radius:10px;font-size:0.8rem;font-weight:500;margin-top:10px;}
+  .notif-ok{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);color:var(--c-green);}
+  .notif-err{background:rgba(255,68,102,0.1);border:1px solid rgba(255,68,102,0.3);color:var(--c-red);}
+  .spin{animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+  th{color:rgba(0,212,255,0.7);padding:10px 12px;text-align:left;border-bottom:1px solid var(--c-border);font-weight:600;font-size:0.72rem;letter-spacing:0.08em;}
+  td{padding:10px 12px;border-bottom:1px solid rgba(26,26,62,0.5);}
+  ::-webkit-scrollbar{width:4px;height:4px;}
+  ::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.3);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="width:100%;max-width:380px;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="width:56px;height:56px;border-radius:50%;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <i class="fa-solid fa-lock" style="color:var(--c-neon);font-size:1.1rem;"></i>
+      </div>
+      <div class="brand neon-text" style="font-size:0.9rem;letter-spacing:0.15em;">RITELCOMMUNITY.ID</div>
+      <div style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin-top:4px;letter-spacing:0.1em;">ADMIN PANEL</div>
+    </div>
+    <div class="card">
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.72rem;color:rgba(255,255,255,0.4);display:block;margin-bottom:8px;">PASSWORD</label>
+        <input type="password" id="admin-pass" class="input-field" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <button onclick="doLogin()" class="btn-neon">
+        <i class="fa-solid fa-right-to-bracket" style="margin-right:8px;"></i>MASUK
+      </button>
+      <div id="login-err" class="notif notif-err"></div>
+    </div>
+    <div style="text-align:center;margin-top:16px;font-size:0.68rem;color:rgba(255,255,255,0.2);">
+      <a href="/" style="color:rgba(0,212,255,0.4);text-decoration:none;"><i class="fa-solid fa-arrow-left" style="margin-right:4px;"></i>Kembali ke Website</a>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL (hidden by default) -->
+<div id="admin-panel" style="display:none;min-height:100vh;">
+  <!-- Top Bar -->
+  <div class="glass" style="border-bottom:1px solid var(--c-border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:50;">
+    <div>
+      <div class="brand neon-text" style="font-size:0.85rem;letter-spacing:0.1em;">ADMIN PANEL</div>
+      <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);">RITELCOMMUNITY.ID SCREENER</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <a href="/" class="btn-neon" style="padding:7px 16px;font-size:0.75rem;text-decoration:none;display:inline-block;"><i class="fa-solid fa-house" style="margin-right:6px;"></i>Website</a>
+      <button onclick="doLogout()" style="background:rgba(255,68,102,0.1);border:1px solid rgba(255,68,102,0.3);color:#ff6680;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:0.75rem;">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </div>
+
+  <div style="max-width:1100px;margin:0 auto;padding:24px 16px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;">
+
+      <!-- ===== FORCE SCRAPE ===== -->
+      <div class="card" style="border-color:rgba(255,68,102,0.25);">
+        <div class="section-label">DATA UPDATE</div>
+        <div style="font-weight:700;font-size:1rem;margin-bottom:8px;">Force Scrape Saham</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-bottom:20px;line-height:1.6;">
+          Ambil data real-time dari sumber data IDX dan hitung ulang MA20 + MACD untuk semua saham. <strong style="color:rgba(255,68,102,0.8);">Wajib diklik pertama kali!</strong>
+        </div>
+        <button onclick="doScrape()" class="btn-danger" id="scrape-btn">
+          <i class="fa-solid fa-bolt" id="scrape-icon" style="margin-right:8px;"></i>
+          <span id="scrape-text">FORCE SCRAPE / UPDATE DATA SEKARANG</span>
+        </button>
+        <div id="scrape-notif" class="notif"></div>
+        <div id="scrape-result" style="margin-top:12px;font-size:0.75rem;color:rgba(255,255,255,0.4);display:none;"></div>
+      </div>
+
+      <!-- ===== UPGRADE USER ===== -->
+      <div class="card">
+        <div class="section-label">MANAJEMEN USER</div>
+        <div style="font-weight:700;font-size:1rem;margin-bottom:16px;">Upgrade / Downgrade User</div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.72rem;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">No. HP User</label>
+          <input type="text" id="user-phone" class="input-field" placeholder="08123456789"/>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:0.72rem;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Nama (opsional)</label>
+          <input type="text" id="user-name" class="input-field" placeholder="Nama user"/>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <button onclick="upgradeUser('VIP')" class="btn-green">
+            <i class="fa-solid fa-crown" style="margin-right:6px;color:var(--c-gold);"></i>Upgrade VIP
+          </button>
+          <button onclick="upgradeUser('Free')" class="btn-red">
+            <i class="fa-solid fa-user" style="margin-right:6px;"></i>Set Free
+          </button>
+        </div>
+        <div id="user-notif" class="notif"></div>
+      </div>
+
+      <!-- ===== SETTINGS CMS ===== -->
+      <div class="card" style="grid-column:1/-1;">
+        <div class="section-label">CMS SETTINGS</div>
+        <div style="font-weight:700;font-size:1rem;margin-bottom:20px;">Update Harga, Rekening & Sosmed</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:20px;">
+          <div>
+            <label style="font-size:0.72rem;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Harga VIP (Rp)</label>
+            <input type="number" id="s-vip-price" class="input-field" placeholder="99000"/>
+          </div>
+          <div>
+            <label style="font-size:0.72rem;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Rekening Bank</label>
+            <input type="text" id="s-bank" class="input-field" placeholder="BCA 1234567890 a.n. Nama"/>
+          </div>
+          <div>
+            <label style="font-size:0.72rem;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Link WA Channel</label>
+            <input type="text" id="s-wa-channel" class="input-field" placeholder="https://whatsapp.com/channel/..."/>
+          </div>
+          <div>
+            <label style="font-size:0.72rem;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Link WA Group</label>
+            <input type="text" id="s-wa-group" class="input-field" placeholder="https://chat.whatsapp.com/..."/>
+          </div>
+          <div>
+            <label style="font-size:0.72rem;color:rgba(255,255,255,0.4);display:block;margin-bottom:6px;">Link Instagram</label>
+            <input type="text" id="s-ig" class="input-field" placeholder="https://instagram.com/..."/>
+          </div>
+        </div>
+        <button onclick="saveSettings()" class="btn-neon">
+          <i class="fa-solid fa-floppy-disk" style="margin-right:8px;"></i>SIMPAN SEMUA PERUBAHAN
+        </button>
+        <div id="settings-notif" class="notif"></div>
+      </div>
+
+      <!-- ===== USER TABLE ===== -->
+      <div class="card" style="grid-column:1/-1;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div>
+            <div class="section-label">DATABASE</div>
+            <div style="font-weight:700;font-size:1rem;">Daftar User</div>
+          </div>
+          <button onclick="loadUsers()" style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.25);color:rgba(0,212,255,0.7);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:0.75rem;">
+            <i class="fa-solid fa-arrows-rotate" id="users-icon"></i>
+          </button>
+        </div>
+        <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--c-border);">
+          <table>
+            <thead><tr><th>#</th><th>No. HP</th><th>Nama</th><th>Status</th><th>Bergabung</th></tr></thead>
+            <tbody id="users-table">
+              <tr><td colspan="5" style="text-align:center;padding:24px;color:rgba(255,255,255,0.3);">Klik refresh untuk memuat data</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+let adminPass = '';
+
+function doLogin(){
+  const pass = document.getElementById('admin-pass').value;
+  const err = document.getElementById('login-err');
+  if(pass === 'pedia123'){
+    adminPass = pass;
+    sessionStorage.setItem('rc_admin', pass);
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    loadSettings();
+    loadUsers();
+  } else {
+    err.style.display='block';
+    err.textContent='Password salah!';
+    setTimeout(()=>err.style.display='none', 2500);
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem('rc_admin');
+  location.reload();
+}
+
+// Auto-login jika session masih ada
+window.addEventListener('DOMContentLoaded', ()=>{
+  const saved = sessionStorage.getItem('rc_admin');
+  if(saved === 'pedia123'){
+    adminPass = saved;
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    loadSettings();
+    loadUsers();
+  }
+});
+
+function showNotif(id, type, msg){
+  const el = document.getElementById(id);
+  el.className = `notif notif-${type}`;
+  el.textContent = msg;
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none', 4000);
+}
+
+async function doScrape(){
+  const btn = document.getElementById('scrape-btn');
+  const icon = document.getElementById('scrape-icon');
+  const text = document.getElementById('scrape-text');
+  btn.disabled=true;
+  icon.className='fa-solid fa-circle-notch spin';
+  text.textContent='SEDANG MENGAMBIL DATA...';
+  try{
+    const r = await fetch(`${API}/api/admin/scrape`, {
+      method:'POST',
+      headers:{'x-admin-secret': adminPass}
+    });
+    const json = await r.json();
+    if(r.ok && json.success){
+      showNotif('scrape-notif','ok', `Berhasil! ${json.count} saham diperbarui.`);
+      const res = document.getElementById('scrape-result');
+      res.style.display='block';
+      res.innerHTML=`<i class="fa-solid fa-check" style="color:var(--c-green);margin-right:6px;"></i>Updated: ${json.updated?.join(', ')||'-'}`;
+    } else {
+      showNotif('scrape-notif','err', 'Error: '+(json.detail||json.error||'Unknown error'));
+    }
+  } catch(e){
+    showNotif('scrape-notif','err','Request gagal: '+e.message);
+  }
+  btn.disabled=false;
+  icon.className='fa-solid fa-bolt';
+  text.textContent='FORCE SCRAPE / UPDATE DATA SEKARANG';
+}
+
+async function upgradeUser(status){
+  const phone = document.getElementById('user-phone').value.trim();
+  const name = document.getElementById('user-name').value.trim();
+  if(!phone){ showNotif('user-notif','err','No. HP wajib diisi!'); return; }
+  
+  const endpoint = status==='VIP' ? 'upgrade-user' : 'downgrade-user';
+  try{
+    const r = await fetch(`${API}/api/admin/${endpoint}`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-admin-secret': adminPass},
+      body: JSON.stringify({ phone_number: phone, name: name||'User' })
+    });
+    const json = await r.json();
+    if(r.ok && json.success){
+      showNotif('user-notif','ok',`${phone} berhasil di-set ke ${status}!`);
+      document.getElementById('user-phone').value='';
+      document.getElementById('user-name').value='';
+      loadUsers();
+    } else {
+      showNotif('user-notif','err','Error: '+(json.detail||json.error));
+    }
+  } catch(e){
+    showNotif('user-notif','err','Request gagal: '+e.message);
+  }
+}
+
+async function loadSettings(){
+  try{
+    const r = await fetch(`${API}/api/settings`);
+    const json = await r.json();
+    if(json.vip_price) document.getElementById('s-vip-price').value = json.vip_price;
+    if(json.bank_account) document.getElementById('s-bank').value = json.bank_account;
+    if(json.wa_channel) document.getElementById('s-wa-channel').value = json.wa_channel;
+    if(json.wa_group) document.getElementById('s-wa-group').value = json.wa_group;
+    if(json.ig_link) document.getElementById('s-ig').value = json.ig_link;
+  } catch(e){}
+}
+
+async function saveSettings(){
+  const body = {
+    vip_price: parseFloat(document.getElementById('s-vip-price').value)||99000,
+    bank_account: document.getElementById('s-bank').value,
+    wa_channel: document.getElementById('s-wa-channel').value,
+    wa_group: document.getElementById('s-wa-group').value,
+    ig_link: document.getElementById('s-ig').value,
+  };
+  try{
+    const r = await fetch(`${API}/api/admin/settings`, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json','x-admin-secret': adminPass},
+      body: JSON.stringify(body)
+    });
+    const json = await r.json();
+    if(r.ok && json.success){
+      showNotif('settings-notif','ok','Settings berhasil disimpan!');
+    } else {
+      showNotif('settings-notif','err','Error: '+(json.detail||json.error));
+    }
+  } catch(e){
+    showNotif('settings-notif','err','Request gagal: '+e.message);
+  }
+}
+
+async function loadUsers(){
+  const icon = document.getElementById('users-icon');
+  icon.className='fa-solid fa-circle-notch spin';
+  try{
+    const r = await fetch(`${API}/api/admin/users`, { headers:{'x-admin-secret': adminPass} });
+    const json = await r.json();
+    const tbody = document.getElementById('users-table');
+    if(!json.data?.length){
+      tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);">Belum ada user</td></tr>';
+    } else {
+      tbody.innerHTML = json.data.map((u,i)=>`<tr>
+        <td style="color:rgba(255,255,255,0.3);font-size:0.75rem;">${i+1}</td>
+        <td style="font-family:monospace;">${u.phone_number}</td>
+        <td>${u.name||'—'}</td>
+        <td><span style="padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:600;background:${u.status==='VIP'?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.06)'};color:${u.status==='VIP'?'#ffd700':'rgba(255,255,255,0.5)'};border:1px solid ${u.status==='VIP'?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.1)'};">${u.status}</span></td>
+        <td style="color:rgba(255,255,255,0.35);font-size:0.75rem;">${u.created_at?new Date(u.created_at).toLocaleDateString('id-ID'):'—'}</td>
+      </tr>`).join('');
+    }
+  } catch(e){
+    document.getElementById('users-table').innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:rgba(255,68,102,0.7);">Gagal memuat user</td></tr>';
+  }
+  icon.className='fa-solid fa-arrows-rotate';
+}
+</script>
+</body>
+</html>
