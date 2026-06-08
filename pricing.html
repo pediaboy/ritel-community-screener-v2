@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pricing — RITELCOMMUNITY.ID SCREENER</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+    :root {
+      --galaxy-bg:#03050d;--galaxy-card:#0a0e1a;--galaxy-border:#1a2340;
+      --galaxy-accent:#3b82f6;--galaxy-accent2:#8b5cf6;--galaxy-green:#10b981;
+      --galaxy-gold:#f59e0b;--galaxy-text:#e2e8f0;--galaxy-muted:#64748b;
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:'Inter',sans-serif;background:var(--galaxy-bg);color:var(--galaxy-text);min-height:100vh;overflow-x:hidden;}
+    #stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+    .content-wrap{position:relative;z-index:1;}
+    header{background:rgba(10,14,26,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--galaxy-border);padding:0 1.5rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .logo-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;background:linear-gradient(135deg,#60a5fa,#a78bfa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .nav-link{color:var(--galaxy-muted);font-size:0.85rem;font-weight:500;text-decoration:none;padding:6px 12px;border-radius:8px;transition:all 0.2s;}
+    .nav-link:hover{color:var(--galaxy-text);background:rgba(59,130,246,0.1);}
+    .nav-link.active{color:#60a5fa;background:rgba(59,130,246,0.12);}
+    .header-badge{font-size:0.65rem;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;padding:2px 8px;border-radius:99px;font-weight:600;letter-spacing:0.5px;margin-left:8px;}
+    .admin-trigger{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;color:var(--galaxy-muted);transition:all 0.2s;border:1px solid transparent;background:none;}
+    .admin-trigger:hover{color:var(--galaxy-text);background:rgba(255,255,255,0.05);border-color:var(--galaxy-border);}
+    .glass-card{background:rgba(10,14,26,0.7);border:1px solid var(--galaxy-border);border-radius:16px;backdrop-filter:blur(12px);}
+    .pricing-card{border-radius:20px;padding:2rem;position:relative;overflow:hidden;transition:transform 0.2s;}
+    .pricing-card:hover{transform:translateY(-4px);}
+    .free-card{background:rgba(10,14,26,0.9);border:1px solid var(--galaxy-border);}
+    .vip-card{background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.15));border:1px solid rgba(139,92,246,0.4);box-shadow:0 0 40px rgba(139,92,246,0.15);}
+    .vip-glow{position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(139,92,246,0.2),transparent 70%);pointer-events:none;}
+    .feature-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(26,35,64,0.4);}
+    .feature-item:last-child{border-bottom:none;}
+    .btn-vip{display:block;width:100%;padding:14px;text-align:center;border-radius:12px;font-weight:700;font-size:0.95rem;text-decoration:none;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border:none;cursor:pointer;transition:all 0.2s;}
+    .btn-vip:hover{box-shadow:0 0 25px rgba(139,92,246,0.4);transform:translateY(-1px);}
+    .btn-free{display:block;width:100%;padding:14px;text-align:center;border-radius:12px;font-weight:700;font-size:0.95rem;text-decoration:none;background:rgba(255,255,255,0.05);color:var(--galaxy-muted);border:1px solid var(--galaxy-border);cursor:pointer;transition:all 0.2s;}
+    .btn-free:hover{background:rgba(255,255,255,0.08);}
+    footer{border-top:1px solid var(--galaxy-border);padding:2rem 1.5rem;text-align:center;color:var(--galaxy-muted);font-size:0.8rem;background:rgba(10,14,26,0.5);}
+    ::-webkit-scrollbar{width:6px;height:6px;}
+    ::-webkit-scrollbar-track{background:var(--galaxy-bg);}
+    ::-webkit-scrollbar-thumb{background:var(--galaxy-border);border-radius:3px;}
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<div class="content-wrap">
+  <header>
+    <div style="display:flex;align-items:center;gap:8px">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="url(#hg2)" stroke-width="1.5"/><path d="M8 14l4 4 8-8" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="hg2" x1="0" y1="0" x2="28" y2="28"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs></svg>
+      <span class="logo-text">RITELCOMMUNITY.ID SCREENER</span>
+    </div>
+    <nav style="display:flex;align-items:center;gap:4px">
+      <a href="index.html" class="nav-link">Dashboard</a>
+      <a href="pricing.html" class="nav-link active">Pricing</a>
+      <button class="admin-trigger" onclick="window.location.href='admin.html'" title="Admin">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="4" r="1.5" fill="currentColor"/><circle cx="9" cy="9" r="1.5" fill="currentColor"/><circle cx="9" cy="14" r="1.5" fill="currentColor"/></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main style="max-width:900px;margin:0 auto;padding:3rem 1.5rem">
+    <div style="text-align:center;margin-bottom:3rem">
+      <div style="font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--galaxy-muted);margin-bottom:12px">PILIH PLAN LU</div>
+      <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;margin:0 0 12px">
+        <span style="background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Upgrade</span> ke VIP
+      </h1>
+      <p style="color:var(--galaxy-muted);font-size:0.95rem;max-width:500px;margin:0 auto">Akses fitur premium screener, sinyal lebih advanced, dan komunitas trader pilihan.</p>
+    </div>
+
+    <!-- Bank Account Info -->
+    <div class="glass-card" style="padding:1rem 1.25rem;margin-bottom:2rem;display:flex;align-items:center;gap:12px">
+      <i class="fa-solid fa-building-columns" style="color:#f59e0b;font-size:1.1rem"></i>
+      <div>
+        <div style="font-size:0.75rem;color:var(--galaxy-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Transfer ke Rekening</div>
+        <div id="bank-account" style="font-size:0.95rem;font-weight:700;font-family:'Space Grotesk',monospace">Memuat...</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-bottom:3rem">
+      <!-- Free -->
+      <div class="pricing-card free-card">
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--galaxy-muted);margin-bottom:12px">FREE</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:2.5rem;font-weight:800;margin-bottom:4px">Rp 0</div>
+        <div style="color:var(--galaxy-muted);font-size:0.85rem;margin-bottom:1.5rem">Selamanya gratis</div>
+        <div style="margin-bottom:1.5rem">
+          <div class="feature-item">
+            <i class="fa-solid fa-circle-check" style="color:var(--galaxy-green);margin-top:2px;font-size:0.9rem"></i>
+            <span style="font-size:0.875rem">Live Screener LQ45</span>
+          </div>
+          <div class="feature-item">
+            <i class="fa-solid fa-circle-check" style="color:var(--galaxy-green);margin-top:2px;font-size:0.9rem"></i>
+            <span style="font-size:0.875rem">Data Change % Real-time</span>
+          </div>
+          <div class="feature-item">
+            <i class="fa-solid fa-circle-check" style="color:var(--galaxy-green);margin-top:2px;font-size:0.9rem"></i>
+            <span style="font-size:0.875rem">Analisa Komunitas Publik</span>
+          </div>
+          <div class="feature-item" style="opacity:0.4">
+            <i class="fa-solid fa-circle-xmark" style="color:var(--galaxy-muted);margin-top:2px;font-size:0.9rem"></i>
+            <span style="font-size:0.875rem">MA20 &amp; MACD Signal</span>
+          </div>
+          <div class="feature-item" style="opacity:0.4">
+            <i class="fa-solid fa-circle-xmark" style="color:var(--galaxy-muted);margin-top:2px;font-size:0.9rem"></i>
+            <span style="font-size:0.875rem">Alert Breakout Eksklusif</span>
+          </div>
+          <div class="feature-item" style="opacity:0.4;border-bottom:none">
+            <i class="fa-solid fa-circle-xmark" style="color:var(--galaxy-muted);margin-top:2px;font-size:0.9rem"></i>
+            <span style="font-size:0.875rem">Grup VIP Telegram</span>
+          </div>
+        </div>
+        <button class="btn-free" onclick="window.location.href='index.html'">Lanjut Pakai Gratis</button>
+      </div>
+
+      <!-- VIP -->
+      <div class="pricing-card vip-card">
+        <div class="vip-glow"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#a78bfa">VIP</div>
+          <div style="background:linear-gradient(135deg,#f59e0b,#ef4444);color:white;font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:99px;letter-spacing:0.5px">RECOMMENDED</div>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:2.5rem;font-weight:800;margin-bottom:4px" id="vip-price-display">Rp -</div>
+        <div style="color:var(--galaxy-muted);font-size:0.85rem;margin-bottom:1.5rem">Per bulan</div>
+        <div style="margin-bottom:1.5rem">
+          <div class="feature-item">
+            <i class="fa-solid fa-circle-check" style="color:var(--galaxy-green);margin-top:2px;font-size:0.9rem"></i>
+            <span style="font-size:0.875rem">Semua fitur Free</span>
+          </div>
+          <div class="feature-item">
+            <i class="fa-solid fa-circle-check" style="color:var(--galaxy-green);margin-top:2px;font-size:0.9rem"></i>
+            <span style="font-size:0.875rem"><strong>MA20 &amp; MACD Signal</strong></span>
+          </div>
+          <div class="feature-item">
+            <i class="fa-solid fa-circle-check" style="color:var(--galaxy-green);margin-top:2px;font-size:0.9rem"></i>
+            <span style="font-size:0.875rem">Alert Breakout Eksklusif</span>
+          </div>
+          <div class="feature-item">
+            <i class="fa-solid fa-circle-check" style="color:var(--galaxy-green);margin-top:2px;font-size:0.9rem"></i>
+            <span style="font-size:0.875rem">Grup VIP Telegram</span>
+          </div>
+          <div class="feature-item" style="border-bottom:none">
+            <i class="fa-solid fa-circle-check" style="color:var(--galaxy-green);margin-top:2px;font-size:0.9rem"></i>
+            <span style="font-size:0.875rem">Prioritas Support Komunitas</span>
+          </div>
+        </div>
+        <button class="btn-vip" id="btn-bayar" onclick="openPayment()">
+          <i class="fa-brands fa-whatsapp" style="margin-right:8px"></i>Bayar via WhatsApp
+        </button>
+      </div>
+    </div>
+
+    <!-- Payment Instructions -->
+    <div class="glass-card" style="padding:1.5rem">
+      <div style="font-weight:700;font-size:1rem;margin-bottom:1rem">
+        <i class="fa-solid fa-list-check" style="color:#3b82f6;margin-right:8px"></i>Cara Bayar
+      </div>
+      <div style="display:grid;gap:12px">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="min-width:28px;height:28px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700">1</div>
+          <div style="font-size:0.875rem;color:var(--galaxy-muted);padding-top:4px">Klik tombol "Bayar via WhatsApp" di atas</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="min-width:28px;height:28px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700">2</div>
+          <div style="font-size:0.875rem;color:var(--galaxy-muted);padding-top:4px">Transfer sesuai nominal ke rekening yang tertera</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="min-width:28px;height:28px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700">3</div>
+          <div style="font-size:0.875rem;color:var(--galaxy-muted);padding-top:4px">Kirim bukti transfer + No. HP lu ke WA kami. Akun VIP aktif dalam 1x24 jam.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="margin-bottom:8px"><span style="background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700">RITELCOMMUNITY.ID SCREENER</span></div>
+    <div>Development by <strong style="color:var(--galaxy-text)">THIRAFI THARIQ AL IDRIS</strong></div>
+  </footer>
+</div>
+
+<script>
+// Starfield
+const canvas = document.getElementById('stars-canvas');
+const ctx = canvas.getContext('2d');
+let stars = [];
+function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+function initStars(){ stars = Array.from({length:150},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.2+0.2,o:Math.random()*0.5+0.1,speed:Math.random()*0.2+0.05,dir:Math.random()*Math.PI*2})); }
+function drawStars(){ ctx.clearRect(0,0,canvas.width,canvas.height); stars.forEach(s=>{ ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,200,255,${s.o})`;ctx.fill(); s.x+=Math.cos(s.dir)*s.speed;s.y+=Math.sin(s.dir)*s.speed; if(s.x<0)s.x=canvas.width;if(s.x>canvas.width)s.x=0;if(s.y<0)s.y=canvas.height;if(s.y>canvas.height)s.y=0; }); requestAnimationFrame(drawStars); }
+window.addEventListener('resize',()=>{resizeCanvas();initStars();});
+resizeCanvas();initStars();drawStars();
+
+let settings = {};
+
+async function loadSettings(){
+  try {
+    const res = await fetch('/api/settings');
+    settings = await res.json();
+    const price = settings.vip_price || 99000;
+    document.getElementById('vip-price-display').textContent = 'Rp ' + parseInt(price).toLocaleString('id-ID');
+    document.getElementById('bank-account').textContent = settings.bank_account || '-';
+  } catch(e){ console.warn(e); }
+}
+
+function generateInvoiceId(){
+  return 'INV-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+}
+
+function openPayment(){
+  const invoiceId = generateInvoiceId();
+  const price = settings.vip_price || 99000;
+  const bank = encodeURIComponent(settings.bank_account || '-');
+  const msg = encodeURIComponent(`Halo min, gua mau upgrade VIP nih.\n\nID Invoice: ${invoiceId}\nNominal: Rp ${parseInt(price).toLocaleString('id-ID')}\nRekening: ${settings.bank_account || '-'}\n\nMohon konfirmasinya ya.`);
+  window.open(`https://wa.me/6282172222494?text=${msg}`, '_blank');
+}
+
+loadSettings();
+</script>
+</body>
+</html>

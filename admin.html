@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — RITELCOMMUNITY.ID</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+    :root{--galaxy-bg:#03050d;--galaxy-card:#0a0e1a;--galaxy-border:#1a2340;--galaxy-accent:#3b82f6;--galaxy-accent2:#8b5cf6;--galaxy-green:#10b981;--galaxy-red:#ef4444;--galaxy-text:#e2e8f0;--galaxy-muted:#64748b;}
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:'Inter',sans-serif;background:var(--galaxy-bg);color:var(--galaxy-text);min-height:100vh;}
+    #stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+    .content-wrap{position:relative;z-index:1;}
+    .glass-card{background:rgba(10,14,26,0.85);border:1px solid var(--galaxy-border);border-radius:16px;backdrop-filter:blur(12px);}
+    .form-group{margin-bottom:1rem;}
+    .form-label{display:block;font-size:0.8rem;font-weight:600;color:var(--galaxy-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
+    .form-input{width:100%;background:rgba(26,35,64,0.5);border:1px solid var(--galaxy-border);border-radius:10px;padding:10px 14px;color:var(--galaxy-text);font-size:0.875rem;outline:none;transition:border-color 0.2s;font-family:'Inter',sans-serif;}
+    .form-input:focus{border-color:rgba(59,130,246,0.5);}
+    .btn-primary{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border:none;padding:11px 20px;border-radius:10px;font-weight:700;font-size:0.875rem;cursor:pointer;transition:all 0.2s;width:100%;}
+    .btn-primary:hover{box-shadow:0 0 20px rgba(59,130,246,0.3);transform:translateY(-1px);}
+    .btn-danger{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);padding:8px 16px;border-radius:8px;font-weight:600;font-size:0.8rem;cursor:pointer;transition:all 0.2s;}
+    .btn-danger:hover{background:rgba(239,68,68,0.25);}
+    .btn-success{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);padding:8px 16px;border-radius:8px;font-weight:600;font-size:0.8rem;cursor:pointer;transition:all 0.2s;}
+    .btn-success:hover{background:rgba(16,185,129,0.25);}
+    .section-label{font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--galaxy-muted);}
+    .user-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(26,35,64,0.4);}
+    .badge-free{background:rgba(100,116,139,0.2);color:var(--galaxy-muted);border:1px solid rgba(100,116,139,0.3);padding:2px 10px;border-radius:99px;font-size:0.7rem;font-weight:700;}
+    .badge-vip{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);padding:2px 10px;border-radius:99px;font-size:0.7rem;font-weight:700;}
+    #toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:0.85rem;font-weight:500;z-index:9999;transform:translateY(80px);opacity:0;transition:all 0.3s;pointer-events:none;color:white;}
+    #toast.show{transform:translateY(0);opacity:1;}
+    #toast.success{background:rgba(16,185,129,0.95);}
+    #toast.error{background:rgba(239,68,68,0.95);}
+    ::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--galaxy-bg);}::-webkit-scrollbar-thumb{background:var(--galaxy-border);border-radius:3px;}
+  </style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<div class="content-wrap">
+
+  <!-- ══ LOGIN WALL ══ -->
+  <div id="login-wall" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem">
+    <div class="glass-card" style="width:100%;max-width:380px;padding:2rem">
+      <div style="text-align:center;margin-bottom:1.5rem">
+        <div style="width:52px;height:52px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+          <i class="fa-solid fa-shield-halved" style="font-size:1.3rem;color:white"></i>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:4px">Admin Panel</div>
+        <div style="color:var(--galaxy-muted);font-size:0.8rem">RITELCOMMUNITY.ID SCREENER</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password Admin</label>
+        <input type="password" id="admin-password" class="form-input" placeholder="Masukkan password..." onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <button class="btn-primary" onclick="doLogin()">
+        <i class="fa-solid fa-lock-open" style="margin-right:8px"></i>Masuk
+      </button>
+      <div id="login-error" style="display:none;margin-top:12px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:10px;color:#ef4444;font-size:0.8rem;text-align:center">
+        <i class="fa-solid fa-circle-exclamation" style="margin-right:6px"></i>Password salah bro!
+      </div>
+      <div style="text-align:center;margin-top:1rem">
+        <a href="index.html" style="color:var(--galaxy-muted);font-size:0.8rem;text-decoration:none">
+          <i class="fa-solid fa-arrow-left" style="margin-right:4px"></i>Kembali ke Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ADMIN DASHBOARD ══ -->
+  <div id="admin-dashboard" style="display:none">
+    <header style="background:rgba(10,14,26,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--galaxy-border);padding:0 1.5rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:32px;height:32px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:8px;display:flex;align-items:center;justify-content:center">
+          <i class="fa-solid fa-shield-halved" style="font-size:0.9rem;color:white"></i>
+        </div>
+        <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Admin CMS</span>
+        <span style="font-size:0.65rem;background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.3);padding:2px 8px;border-radius:99px;font-weight:600">PRIVATE</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <a href="index.html" style="color:var(--galaxy-muted);font-size:0.8rem;text-decoration:none;padding:6px 12px;border-radius:8px;transition:all 0.2s" onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#64748b'">
+          <i class="fa-solid fa-gauge" style="margin-right:4px"></i>Dashboard
+        </a>
+        <button onclick="doLogout()" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer">
+          <i class="fa-solid fa-right-from-bracket" style="margin-right:4px"></i>Logout
+        </button>
+      </div>
+    </header>
+
+    <main style="max-width:1100px;margin:0 auto;padding:2rem 1.5rem">
+
+      <!-- Stats Row -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem">
+        <div class="glass-card" style="padding:1rem">
+          <div class="section-label" style="margin-bottom:6px">Total Users</div>
+          <div id="stat-users" style="font-size:1.8rem;font-weight:800;font-family:'Space Grotesk',sans-serif">-</div>
+        </div>
+        <div class="glass-card" style="padding:1rem">
+          <div class="section-label" style="margin-bottom:6px">VIP Members</div>
+          <div id="stat-vip" style="font-size:1.8rem;font-weight:800;font-family:'Space Grotesk',sans-serif;color:#f59e0b">-</div>
+        </div>
+        <div class="glass-card" style="padding:1rem">
+          <div class="section-label" style="margin-bottom:6px">Harga VIP</div>
+          <div id="stat-price" style="font-size:1.2rem;font-weight:800;font-family:'Space Grotesk',sans-serif;color:#60a5fa">-</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem">
+
+        <!-- Settings CMS -->
+        <div class="glass-card" style="padding:1.5rem">
+          <div style="font-weight:700;font-size:0.95rem;margin-bottom:1.25rem">
+            <i class="fa-solid fa-sliders" style="color:#3b82f6;margin-right:8px"></i>CMS Settings
+          </div>
+          <div class="form-group">
+            <label class="form-label">Harga VIP (Rp)</label>
+            <input type="number" id="cms-vip-price" class="form-input" placeholder="99000"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nomor Rekening</label>
+            <input type="text" id="cms-bank-account" class="form-input" placeholder="BCA 1234567890 a.n. ..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Link WA Channel</label>
+            <input type="text" id="cms-wa-channel" class="form-input" placeholder="https://whatsapp.com/channel/..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Link WA Group</label>
+            <input type="text" id="cms-wa-group" class="form-input" placeholder="https://chat.whatsapp.com/..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Link Instagram</label>
+            <input type="text" id="cms-ig-link" class="form-input" placeholder="https://instagram.com/..."/>
+          </div>
+          <button class="btn-primary" onclick="saveSettings()">
+            <i class="fa-solid fa-floppy-disk" style="margin-right:8px"></i>Simpan Perubahan
+          </button>
+        </div>
+
+        <!-- Upgrade VIP by Phone -->
+        <div>
+          <div class="glass-card" style="padding:1.5rem;margin-bottom:1rem">
+            <div style="font-weight:700;font-size:0.95rem;margin-bottom:1.25rem">
+              <i class="fa-solid fa-crown" style="color:#f59e0b;margin-right:8px"></i>Upgrade User ke VIP
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nomor HP User</label>
+              <input type="text" id="upgrade-phone" class="form-input" placeholder="08xxxxxxxxxx"/>
+            </div>
+            <button class="btn-primary" onclick="upgradeUser()">
+              <i class="fa-solid fa-user-shield" style="margin-right:8px"></i>Upgrade ke VIP
+            </button>
+          </div>
+
+          <!-- Refresh Stocks -->
+          <div class="glass-card" style="padding:1.5rem">
+            <div style="font-weight:700;font-size:0.95rem;margin-bottom:6px">
+              <i class="fa-solid fa-rotate-right" style="color:#10b981;margin-right:8px"></i>Refresh Data Saham
+            </div>
+            <div style="color:var(--galaxy-muted);font-size:0.8rem;margin-bottom:12px">Fetch ulang data LQ45 dari feed premium dan simpan ke database.</div>
+            <button onclick="refreshStocks()" style="background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);padding:10px 20px;border-radius:10px;font-weight:700;font-size:0.85rem;cursor:pointer;width:100%;transition:all 0.2s">
+              <i class="fa-solid fa-database" style="margin-right:8px"></i>Jalankan Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Table -->
+      <div class="glass-card" style="padding:1.5rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+          <div style="font-weight:700;font-size:0.95rem">
+            <i class="fa-solid fa-users" style="color:#a78bfa;margin-right:8px"></i>Daftar Users
+          </div>
+          <button onclick="loadUsers()" style="background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.2);padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer">
+            <i class="fa-solid fa-arrows-rotate" style="margin-right:4px"></i>Refresh
+          </button>
+        </div>
+        <div id="user-list">
+          <div style="text-align:center;padding:1.5rem;color:var(--galaxy-muted);font-size:0.875rem">
+            <i class="fa-solid fa-spinner fa-spin" style="margin-right:8px"></i>Memuat data user...
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="toast"><i class="fa-solid fa-circle-check" style="margin-right:8px"></i><span id="toast-msg"></span></div>
+
+<script>
+// Starfield
+const canvas = document.getElementById('stars-canvas');
+const ctx = canvas.getContext('2d');
+let stars = [];
+function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+function initStars(){ stars = Array.from({length:120},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1+0.2,o:Math.random()*0.4+0.1,speed:Math.random()*0.2+0.05,dir:Math.random()*Math.PI*2})); }
+function drawStars(){ ctx.clearRect(0,0,canvas.width,canvas.height); stars.forEach(s=>{ ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,200,255,${s.o})`;ctx.fill(); s.x+=Math.cos(s.dir)*s.speed;s.y+=Math.sin(s.dir)*s.speed; if(s.x<0)s.x=canvas.width;if(s.x>canvas.width)s.x=0;if(s.y<0)s.y=canvas.height;if(s.y>canvas.height)s.y=0; }); requestAnimationFrame(drawStars); }
+window.addEventListener('resize',()=>{resizeCanvas();initStars();});
+resizeCanvas();initStars();drawStars();
+
+let adminToken = null;
+
+function showToast(msg, type='success'){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.className = 'show ' + type;
+  setTimeout(() => t.className = '', 3000);
+}
+
+async function doLogin(){
+  const pw = document.getElementById('admin-password').value;
+  document.getElementById('login-error').style.display = 'none';
+  try {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({password: pw})
+    });
+    if (!res.ok) throw new Error('Wrong password');
+    const data = await res.json();
+    adminToken = data.token;
+    document.getElementById('login-wall').style.display = 'none';
+    document.getElementById('admin-dashboard').style.display = 'block';
+    loadAdminData();
+  } catch(e) {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function doLogout(){
+  adminToken = null;
+  document.getElementById('login-wall').style.display = 'flex';
+  document.getElementById('admin-dashboard').style.display = 'none';
+  document.getElementById('admin-password').value = '';
+}
+
+async function loadAdminData(){
+  await Promise.all([loadSettings(), loadUsers()]);
+}
+
+async function loadSettings(){
+  try {
+    const res = await fetch('/api/settings');
+    const data = await res.json();
+    document.getElementById('cms-vip-price').value = data.vip_price || '';
+    document.getElementById('cms-bank-account').value = data.bank_account || '';
+    document.getElementById('cms-wa-channel').value = data.wa_channel || '';
+    document.getElementById('cms-wa-group').value = data.wa_group || '';
+    document.getElementById('cms-ig-link').value = data.ig_link || '';
+    document.getElementById('stat-price').textContent = 'Rp ' + parseInt(data.vip_price||0).toLocaleString('id-ID');
+  } catch(e){ console.warn(e); }
+}
+
+async function saveSettings(){
+  const payload = {
+    vip_price: parseFloat(document.getElementById('cms-vip-price').value) || null,
+    bank_account: document.getElementById('cms-bank-account').value || null,
+    wa_channel: document.getElementById('cms-wa-channel').value || null,
+    wa_group: document.getElementById('cms-wa-group').value || null,
+    ig_link: document.getElementById('cms-ig-link').value || null,
+  };
+  try {
+    const res = await fetch('/api/admin/settings', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-admin-token':adminToken},
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Failed');
+    showToast('Settings berhasil disimpan!', 'success');
+    loadSettings();
+  } catch(e) { showToast('Gagal simpan settings', 'error'); }
+}
+
+async function loadUsers(){
+  const container = document.getElementById('user-list');
+  container.innerHTML = `<div style="text-align:center;padding:1.5rem;color:var(--galaxy-muted);font-size:0.875rem"><i class="fa-solid fa-spinner fa-spin" style="margin-right:8px"></i>Memuat...</div>`;
+  try {
+    const res = await fetch('/api/users', { headers: {'x-admin-token': adminToken} });
+    const data = await res.json();
+    const users = data.data || [];
+    document.getElementById('stat-users').textContent = users.length;
+    document.getElementById('stat-vip').textContent = users.filter(u => u.status === 'VIP').length;
+    if (users.length === 0) {
+      container.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--galaxy-muted)">Belum ada user terdaftar.</div>`;
+      return;
+    }
+    container.innerHTML = users.map(u => `
+      <div class="user-row">
+        <div>
+          <div style="font-weight:600;font-size:0.875rem">${u.name || 'Unknown'}</div>
+          <div style="color:var(--galaxy-muted);font-size:0.78rem">${u.phone_number || '-'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="${u.status === 'VIP' ? 'badge-vip' : 'badge-free'}">${u.status || 'Free'}</span>
+          ${u.status !== 'VIP' ? `<button class="btn-success" onclick="upgradeByPhone('${u.phone_number}')"><i class="fa-solid fa-crown"></i></button>` : ''}
+        </div>
+      </div>
+    `).join('');
+  } catch(e) {
+    container.innerHTML = `<div style="text-align:center;padding:1rem;color:#ef4444">Gagal memuat users.</div>`;
+  }
+}
+
+async function upgradeUser(){
+  const phone = document.getElementById('upgrade-phone').value.trim();
+  if (!phone) { showToast('Masukkan nomor HP dulu bro!', 'error'); return; }
+  await upgradeByPhone(phone);
+  document.getElementById('upgrade-phone').value = '';
+}
+
+async function upgradeByPhone(phone){
+  try {
+    const res = await fetch('/api/admin/upgrade-vip', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-admin-token':adminToken},
+      body: JSON.stringify({phone_number: phone})
+    });
+    if (!res.ok) throw new Error('Failed');
+    showToast(`${phone} berhasil di-upgrade ke VIP!`, 'success');
+    loadUsers();
+  } catch(e) { showToast('Gagal upgrade user. Cek nomor HP-nya.', 'error'); }
+}
+
+async function refreshStocks(){
+  showToast('Fetching data saham...', 'success');
+  try {
+    const res = await fetch('/api/admin/refresh-stocks', {
+      method:'POST',
+      headers:{'x-admin-token':adminToken}
+    });
+    const data = await res.json();
+    if (data.success) showToast(`Berhasil update ${data.updated} saham!`, 'success');
+    else throw new Error('Failed');
+  } catch(e) { showToast('Gagal refresh stocks', 'error'); }
+}
+</script>
+</body>
+</html>

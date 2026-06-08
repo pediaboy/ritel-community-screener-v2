@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RITELCOMMUNITY.ID SCREENER</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root {
+      --galaxy-bg: #03050d;
+      --galaxy-card: #0a0e1a;
+      --galaxy-border: #1a2340;
+      --galaxy-accent: #3b82f6;
+      --galaxy-accent2: #8b5cf6;
+      --galaxy-green: #10b981;
+      --galaxy-red: #ef4444;
+      --galaxy-gold: #f59e0b;
+      --galaxy-text: #e2e8f0;
+      --galaxy-muted: #64748b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--galaxy-bg);
+      color: var(--galaxy-text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Starfield ── */
+    #stars-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .content-wrap { position: relative; z-index: 1; }
+
+    /* ── Header ── */
+    header {
+      background: rgba(10,14,26,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--galaxy-border);
+      padding: 0 1.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.5px;
+    }
+
+    .header-badge {
+      font-size: 0.65rem;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .nav-link {
+      color: var(--galaxy-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .nav-link:hover { color: var(--galaxy-text); background: rgba(59,130,246,0.1); }
+    .nav-link.active { color: #60a5fa; background: rgba(59,130,246,0.12); }
+
+    .admin-trigger {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--galaxy-muted);
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      background: none;
+    }
+    .admin-trigger:hover {
+      color: var(--galaxy-text);
+      background: rgba(255,255,255,0.05);
+      border-color: var(--galaxy-border);
+    }
+
+    /* ── Cards ── */
+    .glass-card {
+      background: rgba(10,14,26,0.7);
+      border: 1px solid var(--galaxy-border);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(10,14,26,0.9) 0%, rgba(15,20,40,0.9) 100%);
+      border: 1px solid var(--galaxy-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .stat-card:hover { border-color: rgba(59,130,246,0.4); }
+
+    /* ── Tabs ── */
+    .tab-btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      background: transparent;
+      color: var(--galaxy-muted);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      box-shadow: 0 0 20px rgba(59,130,246,0.3);
+    }
+    .tab-btn:hover:not(.active) { color: var(--galaxy-text); background: rgba(255,255,255,0.05); }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    th {
+      background: rgba(26,35,64,0.5);
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--galaxy-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-bottom: 1px solid var(--galaxy-border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 12px 14px;
+      font-size: 0.875rem;
+      border-bottom: 1px solid rgba(26,35,64,0.5);
+      white-space: nowrap;
+    }
+    tr:hover td { background: rgba(59,130,246,0.05); }
+
+    .badge-pos { color: var(--galaxy-green); font-weight: 600; }
+    .badge-neg { color: var(--galaxy-red); font-weight: 600; }
+    .badge-neu { color: var(--galaxy-muted); }
+
+    .ticker-pill {
+      display: inline-block;
+      background: rgba(59,130,246,0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      font-family: 'Space Grotesk', monospace;
+    }
+
+    /* ── Live indicator ── */
+    .live-dot {
+      width: 8px; height: 8px;
+      background: var(--galaxy-green);
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    /* ── Skeleton ── */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(26,35,64,0.5) 25%, rgba(59,130,246,0.1) 50%, rgba(26,35,64,0.5) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-anim 1.5s infinite;
+      border-radius: 6px;
+    }
+    @keyframes skeleton-anim { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ── Section heading ── */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--galaxy-muted);
+    }
+
+    /* ── Community link buttons ── */
+    .community-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 1px solid var(--galaxy-border);
+      color: var(--galaxy-text);
+      background: rgba(255,255,255,0.04);
+    }
+    .community-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+    .community-btn.wa { border-color: rgba(37,211,102,0.4); color: #25d366; }
+    .community-btn.wa:hover { background: rgba(37,211,102,0.1); }
+    .community-btn.ig { border-color: rgba(225,48,108,0.4); color: #e1306c; }
+    .community-btn.ig:hover { background: rgba(225,48,108,0.1); }
+    .community-btn.analisa { border-color: rgba(59,130,246,0.4); color: #60a5fa; }
+    .community-btn.analisa:hover { background: rgba(59,130,246,0.1); }
+
+    /* ── Testimonial ── */
+    .testi-card {
+      background: rgba(15,20,40,0.7);
+      border: 1px solid var(--galaxy-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      border-left: 3px solid #3b82f6;
+    }
+
+    /* ── FAQ ── */
+    .faq-item { border-bottom: 1px solid var(--galaxy-border); padding: 1rem 0; }
+    .faq-q { font-weight: 600; color: var(--galaxy-text); margin-bottom: 4px; font-size: 0.9rem; }
+    .faq-a { color: var(--galaxy-muted); font-size: 0.85rem; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--galaxy-border);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: var(--galaxy-muted);
+      font-size: 0.8rem;
+      background: rgba(10,14,26,0.5);
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--galaxy-bg); }
+    ::-webkit-scrollbar-thumb { background: var(--galaxy-border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--galaxy-accent); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(16,185,129,0.95);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+
+    .glow-blue { box-shadow: 0 0 30px rgba(59,130,246,0.15); }
+  </style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+
+<div class="content-wrap">
+  <!-- ══ HEADER ══ -->
+  <header>
+    <div style="display:flex;align-items:center;gap:8px">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="13" stroke="url(#hg)" stroke-width="1.5"/>
+        <path d="M8 14l4 4 8-8" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs><linearGradient id="hg" x1="0" y1="0" x2="28" y2="28"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs>
+      </svg>
+      <span class="logo-text">RITELCOMMUNITY.ID SCREENER</span>
+      <span class="header-badge">LIVE</span>
+    </div>
+    <nav style="display:flex;align-items:center;gap:4px">
+      <a href="index.html" class="nav-link active">Dashboard</a>
+      <a href="pricing.html" class="nav-link">Pricing</a>
+      <button class="admin-trigger" onclick="window.location.href='admin.html'" title="Admin Panel">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="4" r="1.5" fill="currentColor"/>
+          <circle cx="9" cy="9" r="1.5" fill="currentColor"/>
+          <circle cx="9" cy="14" r="1.5" fill="currentColor"/>
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <main style="max-width:1280px;margin:0 auto;padding:2rem 1.5rem">
+
+    <!-- ── Hero ── -->
+    <div style="margin-bottom:2rem">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span class="live-dot"></span>
+        <span class="section-label">Real-time Market Data</span>
+      </div>
+      <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin:0 0 12px;line-height:1.2">
+        Capek kena pom-pom bandar?<br>
+        <span style="background:linear-gradient(135deg,#60a5fa,#a78bfa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Saatnya lu yang pegang kendali.</span>
+      </h1>
+      <p style="color:var(--galaxy-muted);font-size:0.95rem;max-width:680px;line-height:1.7;margin:0">
+        RITELCOMMUNITY.ID SCREENER hadir biar lu gak gampang FOMO. Kita nyediain filter momentum saham berbasis real-time data untuk ngitung MA20 dan MACD secara presisi. Cocok banget buat trader mandiri yang mau setup swing trading pas EOD atau mantengin alert pas market running.
+      </p>
+    </div>
+
+    <!-- ── Stat Cards ── -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem" id="stat-cards">
+      <div class="stat-card">
+        <div class="section-label" style="margin-bottom:8px">Total Saham LQ45</div>
+        <div id="stat-total" style="font-size:1.8rem;font-weight:800;font-family:'Space Grotesk',sans-serif">-</div>
+        <div style="color:var(--galaxy-muted);font-size:0.75rem;margin-top:4px">Konstituen LQ45</div>
+      </div>
+      <div class="stat-card">
+        <div class="section-label" style="margin-bottom:8px">Top Gainer</div>
+        <div id="stat-gainer" style="font-size:1.4rem;font-weight:800;font-family:'Space Grotesk',sans-serif;color:var(--galaxy-green)">-</div>
+        <div id="stat-gainer-pct" style="color:var(--galaxy-green);font-size:0.75rem;margin-top:4px">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="section-label" style="margin-bottom:8px">Top Loser</div>
+        <div id="stat-loser" style="font-size:1.4rem;font-weight:800;font-family:'Space Grotesk',sans-serif;color:var(--galaxy-red)">-</div>
+        <div id="stat-loser-pct" style="color:var(--galaxy-red);font-size:0.75rem;margin-top:4px">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="section-label" style="margin-bottom:8px">Last Update</div>
+        <div id="stat-update" style="font-size:0.95rem;font-weight:600;font-family:'Space Grotesk',sans-serif">-</div>
+        <div style="color:var(--galaxy-muted);font-size:0.75rem;margin-top:4px">Auto-refresh 60s</div>
+      </div>
+    </div>
+
+    <!-- ── Community Links ── -->
+    <div class="glass-card" style="padding:1.25rem;margin-bottom:2rem">
+      <div class="section-label" style="margin-bottom:12px">Komunitas & Analisa</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px" id="community-links">
+        <a href="#" id="link-wa-channel" class="community-btn wa" target="_blank">
+          <i class="fa-brands fa-whatsapp"></i> WA Channel
+        </a>
+        <a href="#" id="link-wa-group" class="community-btn wa" target="_blank">
+          <i class="fa-brands fa-whatsapp"></i> WA Group
+        </a>
+        <a href="#" id="link-ig" class="community-btn ig" target="_blank">
+          <i class="fa-brands fa-instagram"></i> Instagram
+        </a>
+        <a href="https://ritelcommunity.web.id" class="community-btn analisa" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M2 8l4-4M2 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Analisa Komunitas
+        </a>
+        <a href="pricing.html" class="community-btn" style="border-color:rgba(245,158,11,0.4);color:#f59e0b">
+          <i class="fa-solid fa-crown"></i> Upgrade VIP
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Tabs ── -->
+    <div style="display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap">
+      <button class="tab-btn active" onclick="switchTab('screener',this)">
+        <i class="fa-solid fa-chart-line" style="margin-right:6px"></i>Live Screener
+      </button>
+      <button class="tab-btn" onclick="switchTab('testimoni',this)">
+        <i class="fa-solid fa-star" style="margin-right:6px"></i>Testimoni
+      </button>
+      <button class="tab-btn" onclick="switchTab('faq',this)">
+        <i class="fa-solid fa-circle-question" style="margin-right:6px"></i>FAQ
+      </button>
+      <button class="tab-btn" onclick="switchTab('snk',this)">
+        <i class="fa-solid fa-shield" style="margin-right:6px"></i>S&amp;K
+      </button>
+    </div>
+
+    <!-- ── Tab: Screener ── -->
+    <div id="tab-screener" class="glass-card glow-blue" style="padding:1.5rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-weight:700;font-size:1rem;margin-bottom:2px">Momentum Screener — LQ45</div>
+          <div style="color:var(--galaxy-muted);font-size:0.8rem">Data diperbarui otomatis setiap 60 detik</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="search-input" type="text" placeholder="Cari ticker..." onkeyup="filterTable()" style="background:rgba(26,35,64,0.5);border:1px solid var(--galaxy-border);border-radius:8px;padding:7px 12px;color:var(--galaxy-text);font-size:0.8rem;outline:none;width:140px">
+          <button onclick="loadScreener()" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);border:none;color:white;padding:8px 16px;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer">
+            <i class="fa-solid fa-rotate-right"></i> Refresh
+          </button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="screener-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Ticker</th>
+              <th onclick="sortTable('price')" style="cursor:pointer">Harga <i class="fa-solid fa-sort" style="opacity:0.4;font-size:0.65rem"></i></th>
+              <th onclick="sortTable('volume')" style="cursor:pointer">Volume <i class="fa-solid fa-sort" style="opacity:0.4;font-size:0.65rem"></i></th>
+              <th onclick="sortTable('change_pct')" style="cursor:pointer">Change % <i class="fa-solid fa-sort" style="opacity:0.4;font-size:0.65rem"></i></th>
+              <th>Signal</th>
+            </tr>
+          </thead>
+          <tbody id="screener-body">
+            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--galaxy-muted)">
+              <i class="fa-solid fa-spinner fa-spin" style="margin-right:8px"></i>Memuat data pasar...
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Tab: Testimoni ── -->
+    <div id="tab-testimoni" class="glass-card" style="padding:1.5rem;display:none">
+      <div style="font-weight:700;font-size:1rem;margin-bottom:1.25rem">Apa Kata Trader Komunitas?</div>
+      <div style="display:grid;gap:1rem">
+        <div class="testi-card">
+          <div style="display:flex;gap:2px;margin-bottom:8px">
+            <i class="fa-solid fa-star" style="color:#f59e0b;font-size:0.8rem"></i>
+            <i class="fa-solid fa-star" style="color:#f59e0b;font-size:0.8rem"></i>
+            <i class="fa-solid fa-star" style="color:#f59e0b;font-size:0.8rem"></i>
+            <i class="fa-solid fa-star" style="color:#f59e0b;font-size:0.8rem"></i>
+            <i class="fa-solid fa-star" style="color:#f59e0b;font-size:0.8rem"></i>
+          </div>
+          <p style="margin:0 0 10px;font-size:0.9rem;line-height:1.6;color:var(--galaxy-text)">"Gila sih, screener MA20-nya gacor parah! Kemarin dapet alert entry di AMMN pas breakout langsung floating profit."</p>
+          <div style="font-size:0.8rem;color:var(--galaxy-muted);font-weight:600">— Bro Andy, Swing Trader</div>
+        </div>
+        <div class="testi-card">
+          <div style="display:flex;gap:2px;margin-bottom:8px">
+            <i class="fa-solid fa-star" style="color:#f59e0b;font-size:0.8rem"></i>
+            <i class="fa-solid fa-star" style="color:#f59e0b;font-size:0.8rem"></i>
+            <i class="fa-solid fa-star" style="color:#f59e0b;font-size:0.8rem"></i>
+            <i class="fa-solid fa-star" style="color:#f59e0b;font-size:0.8rem"></i>
+            <i class="fa-solid fa-star" style="color:#f59e0b;font-size:0.8rem"></i>
+          </div>
+          <p style="margin:0 0 10px;font-size:0.9rem;line-height:1.6;color:var(--galaxy-text)">"Nyesel gua baru tau web ginian. Ngebantu banget buat nyaring 900+ saham IDX pas market lagi sideways."</p>
+          <div style="font-size:0.8rem;color:var(--galaxy-muted);font-weight:600">— Siska, Ritel Mandiri</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tab: FAQ ── -->
+    <div id="tab-faq" class="glass-card" style="padding:1.5rem;display:none">
+      <div style="font-weight:700;font-size:1rem;margin-bottom:1.25rem">Pertanyaan Umum</div>
+      <div class="faq-item">
+        <div class="faq-q"><i class="fa-solid fa-circle-question" style="color:#3b82f6;margin-right:8px"></i>Datanya delay gak bro?</div>
+        <div class="faq-a" style="padding-left:24px">Kaga, server kita narik feed data bursa premium.</div>
+      </div>
+      <div class="faq-item" style="border-bottom:none">
+        <div class="faq-q"><i class="fa-solid fa-circle-question" style="color:#3b82f6;margin-right:8px"></i>Ada jaminan pasti cuan?</div>
+        <div class="faq-a" style="padding-left:24px">Kagak ada, web ini murni alat bantu teknikal. Keputusan beli/jual tetap di tangan lu sendiri.</div>
+      </div>
+    </div>
+
+    <!-- ── Tab: S&K ── -->
+    <div id="tab-snk" class="glass-card" style="padding:1.5rem;display:none">
+      <div style="font-weight:700;font-size:1rem;margin-bottom:1.25rem">
+        <i class="fa-solid fa-shield-halved" style="color:#8b5cf6;margin-right:8px"></i>Syarat &amp; Ketentuan
+      </div>
+      <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem">
+        <p style="margin:0;color:#fbbf24;font-size:0.85rem;font-weight:600">
+          <i class="fa-solid fa-triangle-exclamation" style="margin-right:8px"></i>DISCLAIMER RISIKO
+        </p>
+      </div>
+      <p style="color:var(--galaxy-muted);font-size:0.875rem;line-height:1.7;margin:0">
+        Trading saham mengandung risiko modal. Seluruh alert bersifat edukasi teknikal murni, BUKAN ajakan membeli/menjual. 
+        Pastikan lu sudah memahami risiko investasi sebelum bertransaksi. Kinerja masa lalu tidak menjamin hasil di masa depan. 
+        RITELCOMMUNITY.ID tidak bertanggung jawab atas kerugian yang timbul akibat keputusan investasi yang diambil berdasarkan 
+        informasi dari platform ini.
+      </p>
+    </div>
+
+  </main>
+
+  <footer>
+    <div style="margin-bottom:8px">
+      <span style="background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700">RITELCOMMUNITY.ID SCREENER</span>
+      <span class="header-badge" style="margin-left:8px">v2.0</span>
+    </div>
+    <div>Development by <strong style="color:var(--galaxy-text)">THIRAFI THARIQ AL IDRIS</strong></div>
+    <div style="margin-top:6px;font-size:0.75rem">
+      Data bersifat informatif. Bukan rekomendasi investasi.
+    </div>
+  </footer>
+</div>
+
+<div id="toast">
+  <i class="fa-solid fa-circle-check" style="margin-right:8px"></i><span id="toast-msg"></span>
+</div>
+
+<script>
+// ── Starfield ──────────────────────────────────────────────────────────────────
+const canvas = document.getElementById('stars-canvas');
+const ctx = canvas.getContext('2d');
+let stars = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function initStars(count = 180) {
+  stars = Array.from({length: count}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.2 + 0.2,
+    o: Math.random() * 0.6 + 0.1,
+    speed: Math.random() * 0.3 + 0.05,
+    dir: Math.random() * Math.PI * 2
+  }));
+}
+
+function drawStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  stars.forEach(s => {
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(180,200,255,${s.o})`;
+    ctx.fill();
+    s.x += Math.cos(s.dir) * s.speed;
+    s.y += Math.sin(s.dir) * s.speed;
+    if (s.x < 0) s.x = canvas.width;
+    if (s.x > canvas.width) s.x = 0;
+    if (s.y < 0) s.y = canvas.height;
+    if (s.y > canvas.height) s.y = 0;
+  });
+  requestAnimationFrame(drawStars);
+}
+
+window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
+resizeCanvas(); initStars(); drawStars();
+
+// ── State ──────────────────────────────────────────────────────────────────────
+let allStocks = [];
+let sortField = 'change_pct';
+let sortAsc = false;
+
+// ── Settings ───────────────────────────────────────────────────────────────────
+async function loadSettings() {
+  try {
+    const res = await fetch('/api/settings');
+    const data = await res.json();
+    if (data.wa_channel && data.wa_channel !== '#') document.getElementById('link-wa-channel').href = data.wa_channel;
+    if (data.wa_group && data.wa_group !== '#') document.getElementById('link-wa-group').href = data.wa_group;
+    if (data.ig_link && data.ig_link !== '#') document.getElementById('link-ig').href = data.ig_link;
+  } catch(e) { console.warn('Settings load failed', e); }
+}
+
+// ── Screener ───────────────────────────────────────────────────────────────────
+async function loadScreener() {
+  const tbody = document.getElementById('screener-body');
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--galaxy-muted)">
+    <i class="fa-solid fa-spinner fa-spin" style="margin-right:8px"></i>Fetching data pasar...
+  </td></tr>`;
+  try {
+    const res = await fetch('/api/screener');
+    if (!res.ok) throw new Error('API error ' + res.status);
+    const json = await res.json();
+    allStocks = json.data || [];
+    document.getElementById('stat-total').textContent = allStocks.length;
+    if (allStocks.length > 0) {
+      const sorted = [...allStocks].sort((a,b) => b.change_pct - a.change_pct);
+      const top = sorted[0], bot = sorted[sorted.length-1];
+      document.getElementById('stat-gainer').textContent = top.ticker;
+      document.getElementById('stat-gainer-pct').textContent = `+${top.change_pct?.toFixed(2)}%`;
+      document.getElementById('stat-loser').textContent = bot.ticker;
+      document.getElementById('stat-loser-pct').textContent = `${bot.change_pct?.toFixed(2)}%`;
+    }
+    document.getElementById('stat-update').textContent = new Date().toLocaleTimeString('id-ID');
+    renderTable(allStocks);
+    showToast('Data berhasil diperbarui');
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--galaxy-red)">
+      <i class="fa-solid fa-circle-exclamation" style="margin-right:8px"></i>Gagal memuat data. Coba refresh lagi.
+    </td></tr>`;
+    console.error(e);
+  }
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById('screener-body');
+  if (!data || data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--galaxy-muted)">Tidak ada data.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map((s, i) => {
+    const chg = s.change_pct ?? 0;
+    const cls = chg > 0 ? 'badge-pos' : chg < 0 ? 'badge-neg' : 'badge-neu';
+    const arrow = chg > 0 ? 'fa-arrow-trend-up' : chg < 0 ? 'fa-arrow-trend-down' : 'fa-minus';
+    const vol = s.volume ? (s.volume >= 1e9 ? (s.volume/1e9).toFixed(1)+'B' : s.volume >= 1e6 ? (s.volume/1e6).toFixed(1)+'M' : s.volume >= 1e3 ? (s.volume/1e3).toFixed(0)+'K' : s.volume) : '-';
+    const signal = chg > 2 ? '<span style="color:#10b981;font-size:0.75rem;font-weight:700"><i class="fa-solid fa-bolt"></i> BULLISH</span>' :
+                   chg < -2 ? '<span style="color:#ef4444;font-size:0.75rem;font-weight:700"><i class="fa-solid fa-arrow-down"></i> BEARISH</span>' :
+                   '<span style="color:#64748b;font-size:0.75rem;font-weight:600"><i class="fa-solid fa-minus"></i> NEUTRAL</span>';
+    return `<tr>
+      <td style="color:var(--galaxy-muted);font-size:0.8rem">${i+1}</td>
+      <td><span class="ticker-pill">${s.ticker}</span></td>
+      <td style="font-weight:600;font-family:'Space Grotesk',monospace">Rp ${(s.price||0).toLocaleString('id-ID')}</td>
+      <td style="color:var(--galaxy-muted);font-size:0.82rem">${vol}</td>
+      <td class="${cls}"><i class="fa-solid ${arrow}" style="margin-right:4px;font-size:0.75rem"></i>${chg.toFixed(2)}%</td>
+      <td>${signal}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const filtered = allStocks.filter(s => s.ticker.toLowerCase().includes(q));
+  renderTable(filtered);
+}
+
+function sortTable(field) {
+  if (sortField === field) sortAsc = !sortAsc;
+  else { sortField = field; sortAsc = false; }
+  const sorted = [...allStocks].sort((a,b) => {
+    const av = a[field] ?? 0, bv = b[field] ?? 0;
+    return sortAsc ? av - bv : bv - av;
+  });
+  renderTable(sorted);
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  ['screener','testimoni','faq','snk'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+loadSettings();
+loadScreener();
+setInterval(loadScreener, 60000);
+</script>
+</body>
+</html>
