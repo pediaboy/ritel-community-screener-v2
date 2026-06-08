@@ -3,7 +3,7 @@ import json
 import requests
 import pandas as pd
 from datetime import datetime
-from fastapi import FastAPI, HTTPException, Header, Request
+from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from supabase import create_client, Client
@@ -21,17 +21,19 @@ app.add_middleware(
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "https://ubsowwkgpooexrmwdpii.supabase.co")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-GOAPI_KEY = os.getenv("GOAPI_KEY")
+GOAPI_KEY    = os.getenv("GOAPI_KEY")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "pedia123")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# GoAPI: WAJIB pakai X-API-Key header
 GOAPI_HEADERS = {
-    "Authorization": GOAPI_KEY,
+    "X-API-Key": GOAPI_KEY,
     "accept": "application/json"
 }
+GOAPI_BASE = "https://api.goapi.io/stock/idx"
 
-# ─── In-memory settings (persists per Lambda warm instance) ───────────────────
+# ─── In-memory settings (fallback; persists per warm Lambda) ─────────────────
 _settings_cache = {
     "id": 1,
     "vip_price": float(os.getenv("SETTING_VIP_PRICE", "99000")),
@@ -54,62 +56,68 @@ class AdminLogin(BaseModel):
     password: str
 
 class UserVipUpgrade(BaseModel):
-    phone_number: str  # maps to whatsapp column
+    phone_number: str  # maps to `whatsapp` column in Supabase
 
 # ─── GoAPI Helpers ────────────────────────────────────────────────────────────
 
-def fetch_lq45_tickers():
-    url = "https://api.goapi.io/stock/idx/index/LQ45/items"
+def fetch_lq45_tickers() -> list:
+    """Returns list of ticker strings e.g. ['BBCA', 'BMRI', ...]"""
+    url = f"{GOAPI_BASE}/index/LQ45/items"
     resp = requests.get(url, headers=GOAPI_HEADERS, timeout=20)
     resp.raise_for_status()
     data = resp.json()
-    # response shape: {"data": {"items": [{"symbol": "BBCA"}, ...]}}
-    items = data.get("data", {}).get("items", [])
-    if not items:
-        # fallback shape
-        items = data.get("items", [])
-    tickers = [item.get("symbol") or item.get("ticker","") for item in items if item.get("symbol") or item.get("ticker")]
-    return tickers
+    # shape: {"status":"success","data":{"results":["AADI","ADMR",...]}}
+    results = data.get("data", {}).get("results", [])
+    if results and isinstance(results[0], dict):
+        return [r.get("symbol", "") for r in results if r.get("symbol")]
+    return [r for r in results if isinstance(r, str)]
 
 
-def fetch_prices_batch(symbols: list):
-    """Fetch prices in batches of 50. Returns dict ticker -> price_data"""
+def fetch_prices_batch(symbols: list) -> dict:
+    """
+    Returns dict: ticker -> {"last": price, "volume": vol, "change_pct": pct}
+    GoAPI prices endpoint: GET /stock/idx/prices?symbols=A,B,C
+    Response: {"data":{"results":[{"symbol":"BBCA","close":4960,"volume":...,"change_pct":-2.27},...]}}
+    """
     all_prices = {}
     for i in range(0, len(symbols), 50):
-        batch = symbols[i:i+50]
-        joined = ",".join(batch)
-        url = f"https://api.goapi.io/stock/idx/prices?symbols={joined}"
+        batch = ",".join(symbols[i:i+50])
+        url = f"{GOAPI_BASE}/prices?symbols={batch}"
         try:
             resp = requests.get(url, headers=GOAPI_HEADERS, timeout=20)
             resp.raise_for_status()
             data = resp.json()
-            # response shape: {"data": {"prices": {"BBCA": {"last": 9000, "volume": 1e6, "change_pct": 1.2}}}}
-            prices = data.get("data", {}).get("prices", {})
-            if not prices:
-                # fallback: flat array
-                arr = data.get("data", [])
-                if isinstance(arr, list):
-                    for item in arr:
-                        sym = item.get("symbol","")
-                        if sym:
-                            prices[sym] = {"last": item.get("price",0), "volume": item.get("volume",0), "change_pct": item.get("change_pct",0)}
-            all_prices.update(prices)
+            results = data.get("data", {}).get("results", [])
+            for item in results:
+                sym = item.get("symbol", "")
+                if sym:
+                    all_prices[sym] = {
+                        "last": item.get("close", item.get("price", 0)),
+                        "volume": item.get("volume", 0),
+                        "change_pct": item.get("change_pct", 0),
+                    }
         except Exception as e:
-            print(f"[WARN] Batch error {joined[:30]}: {e}")
+            print(f"[WARN] prices batch error: {e}")
     return all_prices
 
 
 def compute_indicators_for(ticker: str):
-    """Compute MA20 & MACD from historical candles via pandas"""
+    """
+    GET /stock/idx/{ticker}/historical?period=daily&limit=60
+    Response: {"data":{"results":[{"symbol":"BBCA","date":"..","close":4960,...},...]}}
+    Returns (ma20, macd_line, signal_line) or (None, None, None)
+    """
     try:
-        url = f"https://api.goapi.io/stock/idx/historical?symbol={ticker}&period=daily&limit=60"
+        url = f"{GOAPI_BASE}/{ticker}/historical?period=daily&limit=60"
         resp = requests.get(url, headers=GOAPI_HEADERS, timeout=20)
         resp.raise_for_status()
         data = resp.json()
-        candles = data.get("data", {}).get("candles", data.get("candles", []))
-        closes = [float(c["close"]) for c in candles if c.get("close") is not None]
+        results = data.get("data", {}).get("results", [])
+        closes = [float(r["close"]) for r in results if r.get("close") is not None]
         if len(closes) < 26:
             return None, None, None
+        # reverse so oldest first (GoAPI returns newest first)
+        closes = closes[::-1]
         s = pd.Series(closes)
         ma20 = float(s.rolling(window=20).mean().iloc[-1])
         ema12 = s.ewm(span=12, adjust=False).mean()
@@ -118,14 +126,19 @@ def compute_indicators_for(ticker: str):
         signal_line = float((ema12 - ema26).ewm(span=9, adjust=False).mean().iloc[-1])
         return round(ma20, 2), round(macd_line, 4), round(signal_line, 4)
     except Exception as e:
-        print(f"[WARN] Indicator error {ticker}: {e}")
+        print(f"[WARN] indicator {ticker}: {e}")
         return None, None, None
 
 # ─── Routes ────────────────────────────────────────────────────────────────────
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "time": datetime.utcnow().isoformat(), "goapi_key_set": bool(GOAPI_KEY)}
+    return {
+        "status": "ok",
+        "time": datetime.utcnow().isoformat(),
+        "goapi_key_set": bool(GOAPI_KEY),
+        "supabase_url": SUPABASE_URL
+    }
 
 
 @app.get("/api/settings")
@@ -153,38 +166,42 @@ def update_settings(body: SettingsUpdate, x_admin_token: str = Header(None)):
 
 @app.get("/api/screener")
 def screener():
-    """Live screener: fetch LQ45 tickers, get prices, return sorted by change_pct"""
+    """Live screener: fetch LQ45 tickers + prices, join dengan indicators DB"""
     if not GOAPI_KEY:
-        raise HTTPException(status_code=500, detail="GOAPI_KEY tidak di-set")
+        raise HTTPException(status_code=500, detail="GOAPI_KEY belum diset")
     try:
         tickers = fetch_lq45_tickers()
         if not tickers:
             raise ValueError("Tidak bisa ambil ticker LQ45")
+
         prices = fetch_prices_batch(tickers)
         if not prices:
-            raise ValueError("Tidak bisa ambil harga saham")
+            raise ValueError("Tidak bisa ambil harga saham dari GoAPI")
 
-        # Ambil indicators dari Supabase
+        # Ambil cached indicators dari Supabase
         indicators_map = {}
         try:
-            ind_res = supabase.table("indicators").select("ticker,ma20,macd_line,signal_line").execute()
+            ind_res = supabase.table("indicators").select(
+                "ticker,ma20,macd_line,signal_line"
+            ).execute()
             for row in (ind_res.data or []):
                 indicators_map[row["ticker"]] = row
         except Exception as e:
-            print(f"[WARN] Indicator fetch: {e}")
+            print(f"[WARN] indicators fetch: {e}")
 
         result = []
         for ticker, pd_data in prices.items():
             ind = indicators_map.get(ticker, {})
             result.append({
                 "ticker": ticker,
-                "price": pd_data.get("last", pd_data.get("close", 0)),
+                "price": pd_data.get("last", 0),
                 "volume": pd_data.get("volume", 0),
-                "change_pct": pd_data.get("change_pct", pd_data.get("changePercent", 0)),
+                "change_pct": pd_data.get("change_pct", 0),
                 "ma20": ind.get("ma20"),
                 "macd": ind.get("macd_line"),
                 "signal": ind.get("signal_line"),
             })
+
         result.sort(key=lambda x: (x["change_pct"] or 0), reverse=True)
         return {
             "data": result,
@@ -195,19 +212,9 @@ def screener():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/api/stocks")
-def get_stocks_from_db(limit: int = 50):
-    """Ambil dari DB (historical cache)"""
-    try:
-        res = supabase.table("stocks_data").select("*").limit(limit).execute()
-        return {"data": res.data or [], "count": len(res.data or [])}
-    except Exception as e:
-        return {"data": [], "count": 0, "error": str(e)}
-
-
 @app.post("/api/admin/refresh-stocks")
 def refresh_stocks(x_admin_token: str = Header(None)):
-    """Fetch data live dan simpan ke stocks_data + indicators"""
+    """Fetch live data dan simpan ke DB + hitung indicators"""
     if x_admin_token != "admin-ok":
         raise HTTPException(status_code=403, detail="Unauthorized")
     try:
@@ -217,21 +224,19 @@ def refresh_stocks(x_admin_token: str = Header(None)):
         upserted_indicators = 0
 
         for ticker, pd_data in prices.items():
-            last = pd_data.get("last", pd_data.get("close", 0))
-            volume = pd_data.get("volume", 0)
             try:
                 supabase.table("stocks_data").upsert({
                     "ticker": ticker,
-                    "price": last,
-                    "volume": volume,
+                    "price": pd_data.get("last", 0),
+                    "volume": pd_data.get("volume", 0),
                     "updated_at": datetime.utcnow().isoformat()
                 }).execute()
                 upserted_stocks += 1
             except Exception as e:
                 print(f"[WARN] upsert stocks {ticker}: {e}")
 
-        # Compute indicators for each ticker (batched, 1-2s per ticker)
-        for ticker in tickers[:10]:  # limit 10 untuk avoid timeout
+        # Hitung indicators untuk 10 saham teratas
+        for ticker in tickers[:10]:
             ma20, macd_line, signal_line = compute_indicators_for(ticker)
             if ma20 is not None:
                 try:
@@ -248,7 +253,7 @@ def refresh_stocks(x_admin_token: str = Header(None)):
 
         return {
             "success": True,
-            "tickers": len(tickers),
+            "tickers_fetched": len(tickers),
             "stocks_updated": upserted_stocks,
             "indicators_updated": upserted_indicators
         }
@@ -262,16 +267,13 @@ def get_users(x_admin_token: str = Header(None)):
         raise HTTPException(status_code=403, detail="Unauthorized")
     try:
         res = supabase.table("users").select("id,name,whatsapp,status,created_at").execute()
-        # normalize: expose whatsapp as phone_number for frontend
-        users = []
-        for u in (res.data or []):
-            users.append({
-                "id": u.get("id"),
-                "name": u.get("name"),
-                "phone_number": u.get("whatsapp"),
-                "status": u.get("status","Free"),
-                "created_at": u.get("created_at"),
-            })
+        users = [{
+            "id": u.get("id"),
+            "name": u.get("name"),
+            "phone_number": u.get("whatsapp"),
+            "status": u.get("status", "Free"),
+            "created_at": u.get("created_at"),
+        } for u in (res.data or [])]
         return {"data": users}
     except Exception as e:
         return {"data": [], "error": str(e)}
@@ -282,10 +284,9 @@ def upgrade_vip(body: UserVipUpgrade, x_admin_token: str = Header(None)):
     if x_admin_token != "admin-ok":
         raise HTTPException(status_code=403, detail="Unauthorized")
     try:
-        # phone_number maps to whatsapp column
         res = supabase.table("users").update({"status": "VIP"}).eq("whatsapp", body.phone_number).execute()
         if not res.data:
-            raise HTTPException(status_code=404, detail=f"User dengan WA {body.phone_number} tidak ditemukan")
+            raise HTTPException(status_code=404, detail=f"User WA {body.phone_number} tidak ditemukan")
         return {"success": True, "data": res.data}
     except HTTPException:
         raise
@@ -295,16 +296,16 @@ def upgrade_vip(body: UserVipUpgrade, x_admin_token: str = Header(None)):
 
 @app.get("/api/debug/goapi-test")
 def debug_goapi():
-    """Debug endpoint untuk test GoAPI connection"""
+    """Debug: test GoAPI connection dan response structure"""
+    results = {}
     try:
-        url = "https://api.goapi.io/stock/idx/index/LQ45/items"
-        resp = requests.get(url, headers=GOAPI_HEADERS, timeout=10)
-        raw = resp.json()
-        return {
-            "status_code": resp.status_code,
-            "keys": list(raw.keys()),
-            "data_keys": list(raw.get("data",{}).keys()) if isinstance(raw.get("data"),dict) else str(raw.get("data",""))[:100],
-            "sample": str(raw)[:500]
-        }
+        r = requests.get(f"{GOAPI_BASE}/index/LQ45/items", headers=GOAPI_HEADERS, timeout=10)
+        results["lq45"] = {"status": r.status_code, "sample": str(r.json())[:300]}
     except Exception as e:
-        return {"error": str(e)}
+        results["lq45"] = {"error": str(e)}
+    try:
+        r = requests.get(f"{GOAPI_BASE}/prices?symbols=BBCA,BMRI", headers=GOAPI_HEADERS, timeout=10)
+        results["prices"] = {"status": r.status_code, "sample": str(r.json())[:300]}
+    except Exception as e:
+        results["prices"] = {"error": str(e)}
+    return results
