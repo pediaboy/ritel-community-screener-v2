@@ -3,235 +3,151 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Upgrade VIP — RITELCOMMUNITY.ID</title>
+<title>Daftar VIP — RITELCOMMUNITY.ID</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@600;800&display=swap');
-  :root{--c-bg:#060612;--c-neon:#00d4ff;--c-green:#00ff88;--c-gold:#ffd700;--c-red:#ff4466;}
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;800&display=swap');
+  :root{--c-bg:#060612;--c-card:#0c0c1e;--c-border:#1a1a3e;--c-neon:#00d4ff;--c-green:#00ff88;--c-red:#ff4466;--c-gold:#ffd700;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--c-bg);color:#e0e0ff;font-family:'Inter',sans-serif;min-height:100vh;}
   .brand{font-family:'Orbitron',monospace;}
-  .neon-text{color:var(--c-neon);}
+  .neon-text{color:var(--c-neon);text-shadow:0 0 10px rgba(0,212,255,0.5);}
+  .gold-text{color:var(--c-gold);text-shadow:0 0 10px rgba(255,215,0,0.4);}
   .glass{background:rgba(12,12,30,0.9);backdrop-filter:blur(20px);}
-  .bank-tab{padding:6px 16px;border-radius:20px;cursor:pointer;font-size:0.78rem;font-weight:600;border:1px solid rgba(0,212,255,0.2);color:rgba(0,212,255,0.6);transition:all 0.2s;}
-  .bank-tab.active,.bank-tab:hover{background:rgba(0,212,255,0.12);border-color:var(--c-neon);color:var(--c-neon);}
-  .copy-btn{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:var(--c-neon);padding:5px 12px;border-radius:7px;cursor:pointer;font-size:0.75rem;transition:all 0.2s;}
-  .copy-btn:hover{background:rgba(0,212,255,0.2);}
-  .btn-wa{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#25d366,#128c7e);border-radius:14px;padding:16px;color:#fff;font-weight:700;font-size:0.95rem;text-decoration:none;box-shadow:0 0 24px rgba(37,211,102,0.3);transition:all 0.3s;}
-  .btn-wa:hover{transform:translateY(-2px);box-shadow:0 0 35px rgba(37,211,102,0.45);}
-  #stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
-  .content{position:relative;z-index:1;}
-  @keyframes countdown{from{stroke-dashoffset:0}to{stroke-dashoffset:283}}
+  .btn-gold{background:linear-gradient(135deg,rgba(255,215,0,0.25),rgba(255,140,0,0.2));border:1px solid rgba(255,215,0,0.6);color:var(--c-gold);font-weight:700;padding:16px 32px;border-radius:14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:1rem;transition:all 0.3s;width:100%;letter-spacing:0.03em;}
+  .btn-gold:hover{box-shadow:0 0 30px rgba(255,215,0,0.35);transform:translateY(-1px);}
+  .check{color:var(--c-green);margin-right:10px;}
 </style>
 </head>
 <body>
-<canvas id="stars-canvas"></canvas>
-<div class="content" style="padding:20px 16px;max-width:520px;margin:0 auto;">
 
-  <!-- Header -->
-  <div style="text-align:center;padding:32px 0 24px;">
-    <a href="/" style="color:rgba(0,212,255,0.4);font-size:0.78rem;text-decoration:none;display:inline-block;margin-bottom:20px;">
-      <i class="fa-solid fa-arrow-left" style="margin-right:6px;"></i>Kembali
-    </a>
-    <div style="width:60px;height:60px;border-radius:50%;background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-      <i class="fa-solid fa-crown" style="color:var(--c-gold);font-size:1.3rem;"></i>
-    </div>
-    <div class="brand neon-text" style="font-size:0.72rem;letter-spacing:0.25em;margin-bottom:6px;">RITELCOMMUNITY.ID</div>
-    <div class="brand" style="font-size:1.1rem;color:rgba(255,255,255,0.9);">UPGRADE VIP ACCESS</div>
+<!-- NAV -->
+<nav class="glass" style="border-bottom:1px solid var(--c-border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;">
+  <div class="brand neon-text" style="font-size:0.85rem;letter-spacing:0.12em;">RITELCOMMUNITY.ID</div>
+  <a href="/" style="color:rgba(0,212,255,0.6);font-size:0.75rem;text-decoration:none;"><i class="fa-solid fa-arrow-left" style="margin-right:4px;"></i>Kembali</a>
+</nav>
+
+<div style="max-width:860px;margin:0 auto;padding:48px 16px;">
+
+  <!-- HERO -->
+  <div style="text-align:center;margin-bottom:48px;">
+    <div style="font-size:3.5rem;margin-bottom:16px;">👑</div>
+    <h1 class="gold-text" style="font-size:clamp(1.5rem,4vw,2.5rem);font-weight:800;margin-bottom:12px;">Upgrade ke VIP</h1>
+    <p style="font-size:0.9rem;color:rgba(255,255,255,0.5);max-width:500px;margin:0 auto;line-height:1.7;">
+      Dapatkan akses penuh ke screener real-time, sinyal BUY/SELL/HOLD, analisis teknikal, berita pasar, dan komunitas trader eksklusif.
+    </p>
   </div>
 
-  <!-- Timer -->
-  <div class="glass" style="border:1px solid rgba(255,68,102,0.25);border-radius:16px;padding:16px;text-align:center;margin-bottom:16px;">
-    <div style="font-size:0.65rem;letter-spacing:0.2em;color:rgba(255,68,102,0.7);margin-bottom:8px;">SELESAIKAN PEMBAYARAN DALAM</div>
-    <div class="brand" style="font-size:2rem;font-weight:800;color:var(--c-red);" id="timer">59:00</div>
-    <div style="font-size:0.68rem;color:rgba(255,255,255,0.3);margin-top:4px;">Invoice hangus otomatis setelah waktu habis</div>
-  </div>
+  <!-- PRICING CARD -->
+  <div style="background:linear-gradient(135deg,rgba(20,15,0,0.95),rgba(12,12,30,0.95));border:2px solid rgba(255,215,0,0.35);border-radius:24px;padding:40px;margin-bottom:32px;position:relative;overflow:hidden;">
 
-  <!-- Order Summary -->
-  <div class="glass" style="border:1px solid rgba(0,212,255,0.2);border-radius:16px;padding:20px;margin-bottom:14px;">
-    <div style="font-size:0.62rem;letter-spacing:0.2em;color:rgba(255,255,255,0.3);margin-bottom:14px;">RINGKASAN ORDER</div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-      <span style="font-size:0.82rem;color:rgba(255,255,255,0.5);">Produk</span>
-      <span style="font-size:0.82rem;font-weight:600;">VIP Access — 1 Bulan</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-      <span style="font-size:0.82rem;color:rgba(255,255,255,0.5);">Harga</span>
-      <span style="font-size:0.82rem;" id="base-price">Rp 99.000</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-      <span style="font-size:0.82rem;color:rgba(255,255,255,0.5);">Kode Unik</span>
-      <span style="font-size:0.82rem;color:rgba(0,212,255,0.7);" id="unique-code">+xxx</span>
-    </div>
-    <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:14px;margin-top:4px;display:flex;justify-content:space-between;align-items:center;">
-      <span class="brand" style="font-size:0.75rem;color:rgba(255,255,255,0.5);">TOTAL TRANSFER</span>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span class="brand" style="font-size:1.3rem;font-weight:800;color:var(--c-neon);" id="total-price">Rp 99.247</span>
-        <button onclick="copyText('total-price-raw','Nominal')" class="copy-btn"><i class="fa-regular fa-copy"></i></button>
-      </div>
-    </div>
-    <div style="font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:right;margin-top:6px;">* Transfer TEPAT sesuai nominal untuk verifikasi otomatis</div>
-    <span id="total-price-raw" style="display:none;"></span>
-  </div>
+    <div style="position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,215,0,0.08),transparent 70%);pointer-events:none;"></div>
 
-  <!-- Bank Selector -->
-  <div class="glass" style="border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:14px;">
-    <div style="font-size:0.62rem;letter-spacing:0.2em;color:rgba(255,255,255,0.3);margin-bottom:14px;">PILIH REKENING TUJUAN</div>
-    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;" id="bank-tabs"></div>
-    <div style="background:rgba(0,212,255,0.04);border:1px solid rgba(0,212,255,0.15);border-radius:12px;padding:16px;">
-      <div style="margin-bottom:12px;">
-        <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-bottom:4px;">BANK / E-WALLET</div>
-        <div class="brand" style="font-size:1rem;color:var(--c-neon);font-weight:700;" id="bank-name">BCA</div>
-      </div>
-      <div style="margin-bottom:12px;">
-        <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-bottom:6px;">NOMOR REKENING</div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span class="brand" style="font-size:1.1rem;font-weight:700;letter-spacing:0.08em;" id="bank-no">1234567890</span>
-          <button onclick="copyText('bank-no','Nomor Rekening')" class="copy-btn"><i class="fa-regular fa-copy"></i></button>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:24px;margin-bottom:32px;">
+      <div>
+        <div style="font-size:0.7rem;letter-spacing:0.2em;color:rgba(255,215,0,0.5);margin-bottom:8px;">PAKET BULANAN</div>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <div class="gold-text" style="font-size:clamp(2rem,6vw,3.5rem);font-weight:800;" id="price-display">Rp99.000</div>
+          <div style="color:rgba(255,255,255,0.3);font-size:0.85rem;">/bulan</div>
         </div>
+        <div style="font-size:0.75rem;color:rgba(255,215,0,0.5);margin-top:4px;">Bisa diperpanjang kapan saja</div>
+      </div>
+      <div style="background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);border-radius:12px;padding:12px 20px;text-align:center;">
+        <div style="font-size:0.65rem;color:rgba(255,215,0,0.6);">HEMAT vs retail</div>
+        <div class="gold-text" style="font-size:1.5rem;font-weight:800;">60%</div>
+      </div>
+    </div>
+
+    <!-- BENEFITS -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:32px;">
+      <div style="font-size:0.82rem;"><span class="check"><i class="fa-solid fa-check-circle"></i></span>Screener LQ45 real-time</div>
+      <div style="font-size:0.82rem;"><span class="check"><i class="fa-solid fa-check-circle"></i></span>Sinyal BUY / SELL / HOLD</div>
+      <div style="font-size:0.82rem;"><span class="check"><i class="fa-solid fa-check-circle"></i></span>Indikator MA10, RSI, MACD</div>
+      <div style="font-size:0.82rem;"><span class="check"><i class="fa-solid fa-check-circle"></i></span>Berita pasar IDX terbaru</div>
+      <div style="font-size:0.82rem;"><span class="check"><i class="fa-solid fa-check-circle"></i></span>Akses Group WA VIP</div>
+      <div style="font-size:0.82rem;"><span class="check"><i class="fa-solid fa-check-circle"></i></span>Analisis harian dari admin</div>
+      <div style="font-size:0.82rem;"><span class="check"><i class="fa-solid fa-check-circle"></i></span>Chart interaktif per saham</div>
+      <div style="font-size:0.82rem;"><span class="check"><i class="fa-solid fa-check-circle"></i></span>Tanpa iklan, tanpa noise</div>
+    </div>
+
+    <!-- REKENING -->
+    <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,215,0,0.15);border-radius:12px;padding:20px;margin-bottom:24px;">
+      <div style="font-size:0.68rem;letter-spacing:0.15em;color:rgba(255,255,255,0.35);margin-bottom:10px;">TRANSFER KE REKENING</div>
+      <div style="font-size:1rem;font-weight:700;color:#e0e0ff;" id="bank-display">—</div>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);margin-top:6px;">Konfirmasi via WhatsApp setelah transfer</div>
+    </div>
+
+    <!-- CTA BUTTONS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <button id="wa-btn" onclick="openWA()" class="btn-gold">
+        <i class="fa-brands fa-whatsapp" style="margin-right:10px;"></i>Konfirmasi via WA
+      </button>
+      <a id="channel-btn" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.3);color:var(--c-neon);font-weight:600;padding:16px 20px;border-radius:14px;font-size:0.85rem;text-decoration:none;transition:all 0.3s;">
+        <i class="fa-brands fa-whatsapp"></i>Ikuti Channel
+      </a>
+    </div>
+
+  </div>
+
+  <!-- FAQ -->
+  <div style="background:rgba(12,12,30,0.85);border:1px solid rgba(26,26,62,0.8);border-radius:16px;padding:32px;">
+    <h2 style="font-size:1rem;font-weight:700;margin-bottom:20px;">Pertanyaan Umum</h2>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <div style="font-weight:600;font-size:0.85rem;margin-bottom:4px;">Bagaimana cara daftar VIP?</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);line-height:1.6;">Transfer ke rekening yang tertera, lalu konfirmasi via WhatsApp dengan screenshot bukti transfer dan nomor HP kamu. Admin akan aktifkan akses VIP dalam 1x24 jam.</div>
       </div>
       <div>
-        <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-bottom:4px;">ATAS NAMA</div>
-        <div style="font-size:0.9rem;font-weight:600;" id="bank-owner">THIRAFI THARIQ AL IDRIS</div>
+        <div style="font-weight:600;font-size:0.85rem;margin-bottom:4px;">Berapa lama masa aktif VIP?</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);">1 bulan sejak aktivasi. Bisa diperpanjang kapan saja dengan cara yang sama.</div>
+      </div>
+      <div>
+        <div style="font-weight:600;font-size:0.85rem;margin-bottom:4px;">Data berasal dari mana?</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);">Harga saham dan berita langsung dari GoAPI yang terhubung ke IDX. Data real-time dan akurat.</div>
+      </div>
+      <div>
+        <div style="font-weight:600;font-size:0.85rem;margin-bottom:4px;">Bagaimana cara akses Area VIP?</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);">Setelah admin mengaktifkan, masuk ke <a href="/vip.html" style="color:var(--c-gold);">Area VIP</a> dan masukkan nomor WA yang terdaftar.</div>
       </div>
     </div>
   </div>
-
-  <!-- Warning -->
-  <div style="background:rgba(255,68,102,0.06);border:1px solid rgba(255,68,102,0.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;gap:10px;">
-    <i class="fa-solid fa-triangle-exclamation" style="color:var(--c-red);margin-top:2px;flex-shrink:0;"></i>
-    <div style="font-size:0.72rem;color:rgba(255,255,255,0.45);line-height:1.7;">
-      Transfer <strong style="color:rgba(255,68,102,0.9);">TEPAT</strong> sesuai nominal termasuk 3 digit angka unik. Invoice otomatis hangus jika melewati batas waktu.
-    </div>
-  </div>
-
-  <!-- Deadline -->
-  <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
-    <i class="fa-solid fa-clock" style="color:#f59e0b;"></i>
-    <div>
-      <div style="font-size:0.72rem;color:#f59e0b;font-weight:600;">Batas Waktu Pembayaran</div>
-      <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);" id="deadline-text">—</div>
-    </div>
-  </div>
-
-  <!-- WA Confirm Button -->
-  <a id="wa-btn" href="#" target="_blank" class="btn-wa" style="margin-bottom:12px;">
-    <i class="fa-brands fa-whatsapp" style="font-size:1.2rem;"></i>
-    Konfirmasi Pembayaran via WhatsApp
-  </a>
-  <div style="text-align:center;font-size:0.65rem;color:rgba(255,255,255,0.2);">Admin WA: 082172222494 • RITELCOMMUNITY.ID</div>
 
 </div>
 
 <script>
-const BANKS = [
-  { name:'BCA', no:'1234567890', owner:'THIRAFI THARIQ AL IDRIS' },
-  { name:'BRI', no:'009801012345678', owner:'THIRAFI THARIQ AL IDRIS' },
-  { name:'Mandiri', no:'1400099887766', owner:'THIRAFI THARIQ AL IDRIS' },
-  { name:'Dana', no:'082172222494', owner:'THIRAFI THARIQ AL IDRIS' },
-  { name:'GoPay', no:'082172222494', owner:'THIRAFI THARIQ AL IDRIS' },
-  { name:'OVO', no:'082172222494', owner:'THIRAFI THARIQ AL IDRIS' },
-];
-
-const WA_NUMBER = '6282172222494';
-let basePrice = 99000;
-let uniqueCode = Math.floor(Math.random() * 899 + 100);
-let totalPrice = basePrice + uniqueCode;
-let selectedBank = 0;
-
-// Load price from API
-async function loadPrice(){
+async function loadSettings(){
   try{
     const r = await fetch('/api/settings');
-    const json = await r.json();
-    if(json.vip_price) {
-      basePrice = parseFloat(json.vip_price);
-      totalPrice = basePrice + uniqueCode;
-      updatePriceDisplay();
+    const j = await r.json();
+    if(j.vip_price){
+      document.getElementById('price-display').textContent = 'Rp'+Number(j.vip_price).toLocaleString('id-ID');
     }
-  } catch(e){}
+    if(j.bank_account && j.bank_account!=='-'){
+      document.getElementById('bank-display').textContent = j.bank_account;
+    } else {
+      document.getElementById('bank-display').textContent = 'Hubungi admin via WhatsApp';
+    }
+    if(j.wa_channel && j.wa_channel!=='#'){
+      document.getElementById('channel-btn').href = j.wa_channel;
+    }
+    if(j.wa_group && j.wa_group!=='#'){
+      document.getElementById('wa-btn').dataset.wagroup = j.wa_group;
+    }
+  }catch(e){ console.error(e); }
 }
 
-function updatePriceDisplay(){
-  document.getElementById('base-price').textContent = 'Rp '+basePrice.toLocaleString('id-ID');
-  document.getElementById('unique-code').textContent = '+'+uniqueCode;
-  document.getElementById('total-price').textContent = 'Rp '+totalPrice.toLocaleString('id-ID');
-  document.getElementById('total-price-raw').textContent = totalPrice;
-  updateWALink();
+function openWA(){
+  const wagroup = document.getElementById('wa-btn').dataset.wagroup;
+  if(wagroup && wagroup!=='#'){
+    window.open(wagroup,'_blank');
+  } else {
+    // Fallback: WA chat admin
+    window.open('https://wa.me/?text=Halo admin RITELCOMMUNITY.ID, saya mau daftar VIP. Berikut bukti transfer saya:','_blank');
+  }
 }
 
-function selectBank(idx){
-  selectedBank = idx;
-  const b = BANKS[idx];
-  document.getElementById('bank-name').textContent = b.name;
-  document.getElementById('bank-no').textContent = b.no;
-  document.getElementById('bank-owner').textContent = b.owner;
-  document.querySelectorAll('.bank-tab').forEach((t,i)=>{
-    t.classList.toggle('active', i===idx);
-  });
-  updateWALink();
-}
-
-function initBankTabs(){
-  const wrap = document.getElementById('bank-tabs');
-  wrap.innerHTML = BANKS.map((b,i)=>`<span class="bank-tab ${i===0?'active':''}" onclick="selectBank(${i})">${b.name}</span>`).join('');
-}
-
-function updateWALink(){
-  const b = BANKS[selectedBank];
-  const msg = encodeURIComponent(
-    `Halo admin, saya mau konfirmasi pembayaran VIP:\n\n` +
-    `Produk: VIP Access 1 Bulan\n` +
-    `Bank: ${b.name} - ${b.no}\n` +
-    `Nominal: Rp ${totalPrice.toLocaleString('id-ID')}\n\n` +
-    `Mohon segera dikonfirmasi. Terima kasih!`
-  );
-  document.getElementById('wa-btn').href = `https://wa.me/${WA_NUMBER}?text=${msg}`;
-}
-
-function copyText(id, label){
-  const el = document.getElementById(id);
-  const text = el.textContent.replace(/[^0-9]/g,'') || el.textContent;
-  navigator.clipboard?.writeText(text).then(()=>{
-    const orig = el.textContent;
-    el.style.color='var(--c-green)';
-    setTimeout(()=>el.style.color='',1500);
-  });
-}
-
-// Timer 59 min
-function startTimer(){
-  const end = Date.now() + 59*60*1000;
-  const dl = new Date(end);
-  document.getElementById('deadline-text').textContent = dl.toLocaleString('id-ID',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'long'});
-  
-  const iv = setInterval(()=>{
-    const rem = Math.max(0, end-Date.now());
-    const m = Math.floor(rem/60000);
-    const s = Math.floor((rem%60000)/1000);
-    document.getElementById('timer').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    if(!rem){ clearInterval(iv); document.getElementById('timer').textContent='HANGUS'; document.getElementById('timer').style.color='#666'; }
-  },1000);
-}
-
-// Stars
-(function(){
-  const c=document.getElementById('stars-canvas');
-  const ctx=c.getContext('2d');
-  let W,H,stars=[];
-  function resize(){ W=c.width=innerWidth; H=c.height=innerHeight; }
-  function mk(){ return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1+0.3,a:Math.random(),da:0.003+Math.random()*0.004}; }
-  function init(){ resize(); stars=[]; for(let i=0;i<120;i++) stars.push(mk()); }
-  function draw(){ ctx.clearRect(0,0,W,H); stars.forEach(s=>{s.a+=s.da;if(s.a>1||s.a<0)s.da*=-1;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(180,200,255,${s.a})`;ctx.fill();}); requestAnimationFrame(draw); }
-  window.addEventListener('resize',resize);
-  init(); draw();
-})();
-
-loadPrice();
-updatePriceDisplay();
-initBankTabs();
-selectBank(0);
-startTimer();
+loadSettings();
 </script>
 </body>
 </html>

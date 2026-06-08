@@ -3,7 +3,8 @@
   "builds": [
     {
       "src": "api/main.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "50mb" }
     },
     {
       "src": "public/**",
@@ -14,6 +15,7 @@
     { "src": "/api/(.*)", "dest": "/api/main.py" },
     { "src": "/admin.html", "dest": "/public/admin.html" },
     { "src": "/pricing.html", "dest": "/public/pricing.html" },
+    { "src": "/vip.html", "dest": "/public/vip.html" },
     { "src": "/(.*)", "dest": "/public/index.html" }
   ]
 }
