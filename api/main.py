@@ -206,3 +206,39 @@ def list_users(_: bool = Depends(verify_admin)):
 # Vercel handler
 from mangum import Mangum
 handler = Mangum(app)
+
+
+@app.get("/api/setup")
+def setup_database(secret: str = Query("")):
+    """Setup database tables — jalankan sekali saat pertama deploy"""
+    if secret != ADMIN_SECRET:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    try:
+        # Coba insert ke global_settings untuk test koneksi
+        # Supabase auto-create table tidak bisa, tapi kita bisa handle error nya
+        db = get_db()
+        
+        # Coba upsert default settings
+        try:
+            db.table("global_settings").upsert({
+                "id": 1,
+                "vip_price": 99000,
+                "bank_account": "BCA 1234567890 a.n. Thirafi Thariq",
+                "wa_channel": "#",
+                "wa_group": "#",
+                "ig_link": "#"
+            }, on_conflict="id").execute()
+            settings_ok = True
+        except Exception as e:
+            settings_ok = False
+            settings_err = str(e)
+        
+        return {
+            "message": "Setup check done. Jika ada error, jalankan supabase_schema.sql di Supabase SQL Editor.",
+            "supabase_url": SUPABASE_URL[:40]+"...",
+            "settings_table": "ok" if settings_ok else f"ERROR: {settings_err}",
+            "next_step": "Buka Supabase SQL Editor dan paste isi file supabase_schema.sql"
+        }
+    except Exception as e:
+        return {"error": str(e), "next_step": "Paste supabase_schema.sql ke Supabase SQL Editor"}
