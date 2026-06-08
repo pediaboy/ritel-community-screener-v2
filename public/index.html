@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RITELCOMMUNITY.ID SCREENER</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;600;700;800&display=swap');
+  :root{--c-bg:#060612;--c-card:#0c0c1e;--c-border:#1a1a3e;--c-neon:#00d4ff;--c-green:#00ff88;--c-red:#ff4466;--c-gold:#ffd700;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--c-bg);color:#e0e0ff;font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+  /* STARFIELD */
+  #stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+  .content{position:relative;z-index:1;}
+  /* ORBITRON BRAND */
+  .brand{font-family:'Orbitron',monospace;}
+  /* NEON GLOW */
+  .neon-text{color:var(--c-neon);text-shadow:0 0 10px rgba(0,212,255,0.6),0 0 30px rgba(0,212,255,0.3);}
+  .neon-border{border:1px solid rgba(0,212,255,0.3);box-shadow:0 0 15px rgba(0,212,255,0.08),inset 0 0 15px rgba(0,212,255,0.03);}
+  /* GLASSMORPHISM */
+  .glass{background:rgba(12,12,30,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+  /* BADGE */
+  .badge-up{background:rgba(0,255,136,0.12);color:var(--c-green);border:1px solid rgba(0,255,136,0.3);border-radius:6px;padding:2px 8px;font-size:0.72rem;font-weight:600;}
+  .badge-dn{background:rgba(255,68,102,0.12);color:var(--c-red);border:1px solid rgba(255,68,102,0.3);border-radius:6px;padding:2px 8px;font-size:0.72rem;font-weight:600;}
+  /* TABLE */
+  .tbl-wrap{overflow-x:auto;border-radius:12px;}
+  table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+  thead th{background:rgba(0,212,255,0.08);color:rgba(0,212,255,0.8);font-weight:600;padding:12px 14px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--c-border);}
+  tbody tr{border-bottom:1px solid rgba(26,26,62,0.6);transition:background 0.2s;}
+  tbody tr:hover{background:rgba(0,212,255,0.04);}
+  tbody td{padding:11px 14px;white-space:nowrap;}
+  /* CHART */
+  .chart-container{position:relative;height:260px;width:100%;}
+  /* BUTTON */
+  .btn-neon{background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(0,100,255,0.15));border:1px solid rgba(0,212,255,0.5);color:var(--c-neon);font-weight:600;padding:10px 24px;border-radius:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;}
+  .btn-neon:hover{box-shadow:0 0 20px rgba(0,212,255,0.4);transform:translateY(-1px);}
+  /* SIGNAL DOTS */
+  .sig-buy{color:var(--c-green);}
+  .sig-sell{color:var(--c-red);}
+  .sig-hold{color:#888;}
+  /* TICKER SELECTOR */
+  .ticker-chip{display:inline-block;padding:4px 12px;margin:3px;border-radius:20px;border:1px solid rgba(0,212,255,0.25);cursor:pointer;font-size:0.75rem;color:rgba(0,212,255,0.7);transition:all 0.2s;}
+  .ticker-chip:hover,.ticker-chip.active{background:rgba(0,212,255,0.15);border-color:var(--c-neon);color:var(--c-neon);}
+  /* STAT CARDS */
+  .stat-card{background:rgba(12,12,30,0.9);border:1px solid var(--c-border);border-radius:14px;padding:18px 22px;}
+  /* FOOTER SECRET */
+  #secret-btn{opacity:0.15;transition:opacity 0.3s;cursor:pointer;user-select:none;}
+  #secret-btn:hover{opacity:0.6;}
+  /* LOADING */
+  .spin{animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .skeleton{background:linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.07) 50%,rgba(255,255,255,0.03) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  /* SCROLLBAR */
+  ::-webkit-scrollbar{width:4px;height:4px;}
+  ::-webkit-scrollbar-track{background:var(--c-bg);}
+  ::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.3);border-radius:2px;}
+</style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+
+<div class="content">
+  <!-- NAVBAR -->
+  <nav class="glass neon-border sticky top-0 z-50" style="border-top:none;border-left:none;border-right:none;border-radius:0;padding:14px 24px;">
+    <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div class="brand neon-text" style="font-size:1.1rem;font-weight:800;letter-spacing:0.05em;">RITELCOMMUNITY.ID</div>
+        <div style="font-size:0.65rem;color:rgba(0,212,255,0.5);letter-spacing:0.2em;">STOCK SCREENER</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div id="status-badge" style="display:flex;align-items:center;gap:6px;font-size:0.72rem;color:rgba(255,255,255,0.4);">
+          <span style="width:7px;height:7px;border-radius:50%;background:#444;display:inline-block;" id="status-dot"></span>
+          <span id="status-text">Menghubungkan...</span>
+        </div>
+        <a href="pricing.html" class="btn-neon" style="padding:7px 18px;font-size:0.78rem;text-decoration:none;">
+          <i class="fa-solid fa-crown" style="margin-right:6px;color:var(--c-gold);"></i>Upgrade VIP
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div style="max-width:1280px;margin:0 auto;padding:24px 16px;">
+    <!-- HERO -->
+    <div style="text-align:center;padding:40px 16px 32px;">
+      <div style="display:inline-block;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);border-radius:8px;padding:4px 14px;font-size:0.65rem;letter-spacing:0.25em;color:rgba(0,212,255,0.7);margin-bottom:16px;">
+        MOMENTUM SCREENER — IDX
+      </div>
+      <h1 class="brand" style="font-size:clamp(1.6rem,4vw,2.8rem);font-weight:800;line-height:1.2;margin-bottom:16px;">
+        <span class="neon-text">RITELCOMMUNITY.ID</span><br/>
+        <span style="color:rgba(255,255,255,0.9);">SCREENER</span>
+      </h1>
+      <p style="max-width:640px;margin:0 auto;color:rgba(255,255,255,0.5);font-size:0.88rem;line-height:1.7;">
+        Capek kena pom-pom bandar? RITELCOMMUNITY.ID SCREENER hadir biar lu gak gampang FOMO. Kita nyediain filter momentum saham berbasis real-time data untuk ngitung MA20 dan MACD secara presisi.
+      </p>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px;">
+      <div class="stat-card">
+        <div style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.35);margin-bottom:8px;">TOTAL SAHAM</div>
+        <div class="brand" style="font-size:1.5rem;font-weight:700;color:var(--c-neon);" id="stat-total">—</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.35);margin-bottom:8px;">SINYAL BUY</div>
+        <div class="brand" style="font-size:1.5rem;font-weight:700;color:var(--c-green);" id="stat-buy">—</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.35);margin-bottom:8px;">SINYAL SELL</div>
+        <div class="brand" style="font-size:1.5rem;font-weight:700;color:var(--c-red);" id="stat-sell">—</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.35);margin-bottom:8px;">UPDATE</div>
+        <div style="font-size:0.78rem;font-weight:500;color:rgba(255,255,255,0.6);" id="stat-update">—</div>
+      </div>
+    </div>
+
+    <!-- CHART AREA -->
+    <div class="glass neon-border" style="border-radius:16px;padding:20px;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.35);">PRICE CHART</div>
+          <div class="brand" style="font-size:1rem;color:var(--c-neon);margin-top:2px;" id="chart-title">BBRI</div>
+        </div>
+        <div id="ticker-chips" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="priceChart"></canvas>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:12px;font-size:0.72rem;color:rgba(255,255,255,0.35);">
+        <span><span style="display:inline-block;width:12px;height:2px;background:rgba(0,212,255,0.8);margin-right:4px;vertical-align:middle;"></span>Price</span>
+        <span><span style="display:inline-block;width:12px;height:2px;background:rgba(0,255,136,0.8);margin-right:4px;vertical-align:middle;"></span>MA20</span>
+      </div>
+    </div>
+
+    <!-- TABLE HEADER -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.35);">DATA PASAR</div>
+        <div class="brand" style="font-size:0.95rem;color:rgba(255,255,255,0.9);">Tabel Screener IDX</div>
+      </div>
+      <button onclick="loadStocks()" class="btn-neon" style="padding:8px 18px;font-size:0.78rem;display:flex;align-items:center;gap:7px;">
+        <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i> Refresh Data
+      </button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="glass neon-border" style="border-radius:16px;overflow:hidden;margin-bottom:32px;">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Ticker</th>
+              <th>Harga</th>
+              <th>Perubahan</th>
+              <th>Volume</th>
+              <th>MA20</th>
+              <th>MACD</th>
+              <th>Sinyal</th>
+              <th>Update</th>
+              <th>Chart</th>
+            </tr>
+          </thead>
+          <tbody id="stock-table-body">
+            <tr><td colspan="10" style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);">
+              <i class="fa-solid fa-circle-notch spin" style="font-size:1.2rem;margin-bottom:8px;display:block;"></i>
+              Memuat data...
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- INFO CARDS -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:32px;">
+      <div class="glass neon-border" style="border-radius:14px;padding:20px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:36px;height:36px;border-radius:9px;background:rgba(0,255,136,0.1);display:flex;align-items:center;justify-content:center;">
+            <i class="fa-solid fa-chart-line" style="color:var(--c-green);font-size:0.9rem;"></i>
+          </div>
+          <div style="font-weight:600;font-size:0.9rem;">Sinyal BUY</div>
+        </div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.45);line-height:1.7;">Harga di atas MA20 <strong style="color:rgba(255,255,255,0.7);">DAN</strong> MACD line di atas signal line. Momentum naik terkonfirmasi.</div>
+      </div>
+      <div class="glass neon-border" style="border-radius:14px;padding:20px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:36px;height:36px;border-radius:9px;background:rgba(255,68,102,0.1);display:flex;align-items:center;justify-content:center;">
+            <i class="fa-solid fa-chart-line fa-flip-vertical" style="color:var(--c-red);font-size:0.9rem;"></i>
+          </div>
+          <div style="font-weight:600;font-size:0.9rem;">Sinyal SELL</div>
+        </div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.45);line-height:1.7;">Harga di bawah MA20 <strong style="color:rgba(255,255,255,0.7);">DAN</strong> MACD line di bawah signal line. Momentum turun terkonfirmasi.</div>
+      </div>
+      <div class="glass neon-border" style="border-radius:14px;padding:20px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:36px;height:36px;border-radius:9px;background:rgba(255,215,0,0.1);display:flex;align-items:center;justify-content:center;">
+            <i class="fa-solid fa-crown" style="color:var(--c-gold);font-size:0.9rem;"></i>
+          </div>
+          <div style="font-weight:600;font-size:0.9rem;">VIP Access</div>
+        </div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.45);line-height:1.7;">Akses data lengkap 30+ saham, alert otomatis, dan analisa eksklusif dari tim RITELCOMMUNITY.ID.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer style="border-top:1px solid var(--c-border);padding:24px 16px;text-align:center;">
+    <div style="font-size:0.7rem;color:rgba(255,255,255,0.25);margin-bottom:8px;">
+      RITELCOMMUNITY.ID SCREENER — Data IDX Indonesia
+    </div>
+    <div style="font-size:0.65rem;color:rgba(255,255,255,0.18);">Development by THIRAFI THARIQ AL IDRIS</div>
+    <div style="margin-top:16px;">
+      <span id="secret-btn" onclick="location.href='admin.html'" title="Admin">
+        <i class="fa-solid fa-ellipsis-vertical" style="font-size:0.9rem;color:rgba(255,255,255,0.4);"></i>
+      </span>
+    </div>
+  </footer>
+</div>
+
+<script>
+const API = window.location.origin;
+const TICKERS = ['BBRI','BBCA','TLKM','GOTO','BMRI','ASII','UNVR','BYAN','MDKA','INDF'];
+let chartInstance = null;
+let currentTicker = 'BBRI';
+
+// ===== STARS =====
+(function initStars(){
+  const c = document.getElementById('stars-canvas');
+  const ctx = c.getContext('2d');
+  let W, H, stars = [];
+  function resize(){ W=c.width=window.innerWidth; H=c.height=window.innerHeight; }
+  function mkStar(){ return { x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.2+0.3, a:Math.random(), da:0.002+Math.random()*0.005 }; }
+  function init(){ resize(); stars=[]; for(let i=0;i<160;i++) stars.push(mkStar()); }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{ s.a+=s.da; if(s.a>1||s.a<0) s.da*=-1; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(180,200,255,${s.a})`; ctx.fill(); });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);
+  init(); draw();
+})();
+
+// ===== STATUS =====
+async function checkStatus(){
+  try{
+    const r = await fetch(`${API}/api/health`);
+    if(r.ok){
+      document.getElementById('status-dot').style.background='#00ff88';
+      document.getElementById('status-dot').style.boxShadow='0 0 8px #00ff88';
+      document.getElementById('status-text').textContent='Sistem Online';
+    }
+  } catch(e){
+    document.getElementById('status-dot').style.background='#ff4466';
+    document.getElementById('status-text').textContent='Offline';
+  }
+}
+
+// ===== LOAD STOCKS =====
+async function loadStocks(){
+  const icon = document.getElementById('refresh-icon');
+  icon.classList.add('spin');
+  try{
+    const r = await fetch(`${API}/api/stocks?limit=20`);
+    const json = await r.json();
+    const data = json.data || [];
+    renderTable(data);
+    updateStats(data);
+    document.getElementById('stat-update').textContent = new Date().toLocaleTimeString('id-ID');
+  } catch(e){
+    document.getElementById('stock-table-body').innerHTML=`<tr><td colspan="10" style="text-align:center;padding:30px;color:rgba(255,68,102,0.8);">
+      <i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i>Gagal memuat data. Klik "FORCE SCRAPE" di admin panel untuk mengisi database.
+    </td></tr>`;
+  }
+  icon.classList.remove('spin');
+}
+
+function updateStats(data){
+  document.getElementById('stat-total').textContent = data.length;
+  const buy = data.filter(d=>getSignal(d)==='BUY').length;
+  const sell = data.filter(d=>getSignal(d)==='SELL').length;
+  document.getElementById('stat-buy').textContent = buy;
+  document.getElementById('stat-sell').textContent = sell;
+}
+
+function getSignal(d){
+  if(!d.ma20||!d.macd||!d.macd_signal) return 'HOLD';
+  const aboveMa = d.price > d.ma20;
+  const macdBull = d.macd > d.macd_signal;
+  if(aboveMa && macdBull) return 'BUY';
+  if(!aboveMa && !macdBull) return 'SELL';
+  return 'HOLD';
+}
+
+function renderTable(data){
+  const tbody = document.getElementById('stock-table-body');
+  if(!data.length){
+    tbody.innerHTML=`<tr><td colspan="10" style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);">
+      <i class="fa-solid fa-database" style="display:block;font-size:1.5rem;margin-bottom:8px;"></i>
+      Database kosong. Buka admin panel dan klik "FORCE SCRAPE" untuk mengisi data.
+    </td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map((d,i)=>{
+    const chg = parseFloat(d.change_pct)||0;
+    const sig = getSignal(d);
+    const sigClass = sig==='BUY'?'sig-buy':sig==='SELL'?'sig-sell':'sig-hold';
+    const sigIcon = sig==='BUY'?'fa-arrow-trend-up':sig==='SELL'?'fa-arrow-trend-down':'fa-minus';
+    const fmt = n => n ? parseFloat(n).toLocaleString('id-ID',{minimumFractionDigits:0}) : '—';
+    const fmtSmall = n => n ? parseFloat(n).toFixed(4) : '—';
+    return `<tr>
+      <td style="color:rgba(255,255,255,0.3);font-size:0.75rem;">${i+1}</td>
+      <td><span class="brand" style="color:var(--c-neon);font-weight:700;">${d.ticker}</span></td>
+      <td style="font-weight:600;">Rp ${fmt(d.price)}</td>
+      <td><span class="${chg>=0?'badge-up':'badge-dn'}">${chg>=0?'+':''}${chg.toFixed(2)}%</span></td>
+      <td style="color:rgba(255,255,255,0.6);font-size:0.78rem;">${d.volume ? (parseFloat(d.volume)/1e6).toFixed(1)+'M' : '—'}</td>
+      <td style="color:rgba(255,255,255,0.6);">${d.ma20 ? 'Rp '+fmt(d.ma20) : '—'}</td>
+      <td style="font-family:monospace;font-size:0.78rem;color:rgba(255,255,255,0.6);">${fmtSmall(d.macd)}</td>
+      <td><span class="${sigClass}" style="display:flex;align-items:center;gap:5px;font-weight:700;font-size:0.8rem;">
+        <i class="fa-solid ${sigIcon}"></i> ${sig}
+      </span></td>
+      <td style="color:rgba(255,255,255,0.35);font-size:0.72rem;">${d.updated_at ? new Date(d.updated_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) : '—'}</td>
+      <td><button onclick="loadChart('${d.ticker}')" style="background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:var(--c-neon);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:0.72rem;">
+        <i class="fa-solid fa-chart-simple"></i>
+      </button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== CHART =====
+function initTickerChips(){
+  const wrap = document.getElementById('ticker-chips');
+  wrap.innerHTML = TICKERS.slice(0,8).map(t=>`
+    <span class="ticker-chip ${t===currentTicker?'active':''}" onclick="loadChart('${t}')" id="chip-${t}">${t}</span>
+  `).join('');
+}
+
+async function loadChart(ticker){
+  currentTicker = ticker;
+  document.getElementById('chart-title').textContent = ticker;
+  // Update chip active
+  document.querySelectorAll('.ticker-chip').forEach(c=>c.classList.remove('active'));
+  const chip = document.getElementById(`chip-${ticker}`);
+  if(chip) chip.classList.add('active');
+
+  try{
+    const r = await fetch(`${API}/api/chart/${ticker}`);
+    const json = await r.json();
+    renderChart(json.labels||[], json.prices||[], ticker);
+  } catch(e){
+    // Render dummy
+    const labels = Array.from({length:60},(_,i)=>`D${i+1}`);
+    const prices = Array.from({length:60},(_,i)=>4000+Math.sin(i*0.3)*300+Math.random()*100);
+    renderChart(labels, prices, ticker+' (Demo)');
+  }
+}
+
+function renderChart(labels, prices, ticker){
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  if(chartInstance) chartInstance.destroy();
+  
+  // Hitung MA20
+  const ma20 = prices.map((_,i)=>{
+    if(i<19) return null;
+    const slice = prices.slice(i-19,i+1);
+    return slice.reduce((a,b)=>a+b,0)/20;
+  });
+
+  chartInstance = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        { label:'Price', data:prices, borderColor:'rgba(0,212,255,0.9)', backgroundColor:'rgba(0,212,255,0.05)', borderWidth:2, pointRadius:0, tension:0.3, fill:true },
+        { label:'MA20', data:ma20, borderColor:'rgba(0,255,136,0.7)', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.3, borderDash:[5,5] }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'rgba(6,6,18,0.95)', borderColor:'rgba(0,212,255,0.3)', borderWidth:1, titleColor:'rgba(0,212,255,0.9)', bodyColor:'rgba(255,255,255,0.7)' } },
+      scales:{
+        x:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},maxRotation:0,maxTicksLimit:8} },
+        y:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'rgba(255,255,255,0.3)',font:{size:10}} }
+      }
+    }
+  });
+}
+
+// ===== INIT =====
+checkStatus();
+loadStocks();
+initTickerChips();
+loadChart('BBRI');
+setInterval(loadStocks, 60000);
+</script>
+</body>
+</html>
